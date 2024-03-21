@@ -48,73 +48,7 @@ We are not building any lint or test steps into this, but instead will just simu
 To create github workflows you will need a new folder and instructions to tell github what it should do when you make a commit. 
 
 The workflows file will execute four jobs in order from top to bottom, lint, build, test, deploy. This will require a secret to be created in the repository, as it is referenced below in the build step.
-Create /.github/workflows/cicd.yaml:
-```yaml
----
-name: "CI/CD"
-on:
-  push:
-    branches:
-      - "*"
-  pull_request:
-  release:
-    types:
-      - "created"
-
-permissions:
-  packages: "write"
-  contents: "write"
-  id-token: "write"
-
-jobs:
-  lint:
-    runs-on: "ubuntu-22.04"
-    steps:
-      - name: "Check out repository code"
-        uses: "actions/checkout@v3"
-      - name: "Linting"
-        run: "make lint"
-  build:
-    runs-on: "ubuntu-22.04"
-    needs:
-      - "lint"
-    steps:
-      - name: "Check out repository code"
-        uses: "actions/checkout@v3"
-      - name: "Build the image"
-        run: "make tag=${{ github.ref_name }} build"
-      - name: "Login to ghcr.io"
-        run: "echo ${{ secrets.REPO_TOKEN }} | docker login ghcr.io -u USERNAME --password-stdin"
-      - name: "Push the image to the repository"
-        run: "make tag=${{ github.ref_name }} push"
-  test:
-    runs-on: "ubuntu-22.04"
-    needs:
-      - "build"
-    steps:
-      - name: "Check out repository code"
-        uses: "actions/checkout@v3"
-      - name: "Run tests"
-        run: "make test"
-  deploy:
-    runs-on: "ubuntu-22.04"
-    needs:
-      - "test"
-    if: "${{ github.event_name == 'release' }}"
-    steps:
-      - name: "Check out repository code"
-        uses: "actions/checkout@v3"
-        with:
-          ref: "main"
-      - name: "Update the image tag"
-        run: "make tag=${{ github.ref_name }} update-tag"
-      - name: "Commit changes"
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git commit -am "Updating the Docker image tag"
-          git push origin main
-```
+Create /.github/workflows/cicd.yaml
 
 The build job will create a new image and assign a tag that corresponds to my release naming. Test will ensure that the image can be run without errors, and deploy will update the tag in the values.yaml. After updating the values.yaml it will commit and push the change back to the repo in the main branch. This will only happen if the above tests are successful as based on the if the github.event_name == release.
 
