@@ -14,7 +14,7 @@ timezone: America/Denver
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
 
-title: HomeLab Docs
+title: Byrns Memory Jogger
 
 tagline: Its really here so I can "remember" how do that thing # it will display as the sub-title
 
@@ -23,7 +23,7 @@ description: >- # used by seo meta and the atom feed
 
 # Fill in the protocol & hostname for your site.
 # e.g. 'https://username.github.io', note that it does not end with a '/'.
-url: "https://byrn-baker.github.io"
+url: "https://byrnbaker.me"
 
 github:
   username: byrn-baker # change to your github username
@@ -124,7 +124,7 @@ pwa:
 paginate: 10
 
 # The base URL of your site
-baseurl: ""
+baseurl: "byrnbaker.me"
 
 # ------------ The following options are not recommended to be modified ------------------
 
