@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: technotim-docs
-  namespace: default
+  name: byrnbaker-blog
+  namespace: byrnbaker-blog
 spec:
   selector:
     matchLabels:
-      app: technotim-docs
+      app: byrnbaker-blog
   replicas: 3
   progressDeadlineSeconds: 600
   revisionHistoryLimit: 3
@@ -18,12 +18,12 @@ spec:
   template:
     metadata:
       labels:
-        app: technotim-docs
+        app: byrnbaker-blog
       annotations:
         deploy-date: "deploy-date-value"
     spec:
       containers:
-        - name: technotim-docs
+        - name: byrnbaker-blog
           image: "registry-value:latest"
           imagePullPolicy: Always
           resources:
@@ -52,19 +52,41 @@ spec:
               port: http
       imagePullSecrets:
         - name: registry-credentials-gitlab
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: network
-                    operator: In
-                    values:
-                      - servers-untrusted
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #         - matchExpressions:
+      #             - key: network
+      #               operator: In
+      #               values:
+      #                 - servers-untrusted
+      tolerations:
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: topology.kubernetes.io/zone
           whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
-              app: technotim-docs
+              app: byrnbaker-blog
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: registry
+  namespace: byrnbaker-blog
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`blog.byrnbaker.me`)
+      kind: Rule
+      services:
+        - name: byrnbaker-blog
+          port: 80

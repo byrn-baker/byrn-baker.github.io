@@ -6,4 +6,4 @@ tags: [kubernetes,cicd]
 ---
 
 # Day 4 - Creating Ansible Playbook to Deploy k3s cluster plus all the Apps I would like to use.
-I decided that it was time to create some tasks that could build and destroy VMs for my k3s cluster.  
+I decided that it was time to create some tasks that could build and destroy VMs for my k3s cluster.  It has taken a couple of retries to get it working but here we are finally.
