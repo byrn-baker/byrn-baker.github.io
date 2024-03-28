@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: byrnbaker-blog
-  replicas: 3
+  replicas: 1
   progressDeadlineSeconds: 600
   revisionHistoryLimit: 3
   strategy:
@@ -52,15 +52,15 @@ spec:
               port: http
       imagePullSecrets:
         - name: registry-credentials-gitlab
-      # affinity:
-      #   nodeAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #       nodeSelectorTerms:
-      #         - matchExpressions:
-      #             - key: network
-      #               operator: In
-      #               values:
-      #                 - servers-untrusted
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: network
+                    operator: In
+                    values:
+                      - servers-untrusted
       tolerations:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
