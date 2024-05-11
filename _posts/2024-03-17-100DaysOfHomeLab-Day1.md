@@ -3,6 +3,8 @@ title: Deploying Nautobot on Kubernetes
 date: 2024-03-17 12:00:00 -500
 categories: [100DaysOfHomeLab]
 tags: [nautobot,kubernetes,cicd]
+image:
+  path: /assets/img/headers/k3s_nautobot.webp
 ---
 
 # Day 1 - Setup Flux and deploy Nautobot to your cluster

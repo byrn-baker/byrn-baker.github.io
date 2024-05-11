@@ -3,6 +3,8 @@ title: Deploying Nautobot on Kubernetes
 date: 2024-03-18 12:00:00 -500
 categories: [100DaysOfHomeLab]
 tags: [nautobot,kubernetes,cicd]
+image:
+  path: /assets/img/headers/k3s_nautobot.webp
 ---
 
 # Day 2 - Creating your own custom container
@@ -225,4 +227,4 @@ kubectl describe pod nautobot-default-79f9b4f674-55vln  -n nautobot | grep Image
     Image ID:      ghcr.io/byrn-baker/nautobot-k3s@sha256:4ac323655ca9a95ad6ae519f54df4dfbb547628808fb69e5c62859ddce3e3e07
 ```
 
-<img src="/assets/lib/nautobot-2.1.5.png" alt="">
+<img src="/assets/img/nautobot-2.1.5.webp" alt="">
