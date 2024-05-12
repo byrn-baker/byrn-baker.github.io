@@ -130,9 +130,9 @@ POD26
 ```
 
 We now have a site called POD26. Let's check the Webapp and see what it looks like as well.
-<img src="/assets/img/ansible_workshop/nautobot_api_3.webp" alt="">
+
 We see that on the right side a record of the change we just made. 
-<img src="/assets/img/ansible_workshop/nautobot_api_4.webp" alt="">
+
 We also see that we now have a page for the site created. So perfect, we can see how easy it is to add items to Nautobot via pynautobot.
 
 ```python

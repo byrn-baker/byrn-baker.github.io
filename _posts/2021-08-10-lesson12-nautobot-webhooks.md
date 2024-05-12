@@ -325,7 +325,7 @@ Now that our job template is created we need to update our Nautobot Webhook so t
 
 You will be presented with a list of endpoints. Select the job_templates about mid way down ```http://awxhost/api/v2/job_templates```
 
-<img src="/assets/img/ansible_workshop/section12_api_job_list.webp" alt="">
+
 
 In this list you should have one job, however if there are more you want to look for the Project it is assigned to or even a description that you used for the Job Template, another way is to open the job template up in the AWX/Tower gui and look at the URL which will provde its number at the end ```http://awxhost/#/templates/job_template/9/details``` in my case it is job nine. Look for a link that says "Launch" ```http://awxhost/api/v2/job_templates/9/launch/```. This is the URL that you need to place in your Nautobot webhook URL.
 
