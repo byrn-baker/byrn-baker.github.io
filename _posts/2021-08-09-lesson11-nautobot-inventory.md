@@ -4,7 +4,7 @@ date: 2021-08-09 12:00:00 -500
 categories: [AnsibleWorkshop]
 tags: [ansible,ansibleworkshop,nautobot]
 image:
-#   path: /assets/img/headers/k3s_nautobot.webp
+  path: /assets/img/ansible_workshop/ansible_workshop.webp
 ---
 
 Replacing the static inventory files with the Nautobot Inventory module is the last piece of the puzzle in getting rid of the static group and host vars files. You check out the docs on how to use Nautobot Inventory [here](https://nautobot-ansible.readthedocs.io/en/latest/plugins/inventory_inventory.html#ansible-collections-networktocode-nautobot-inventory-inventory). I will still keep one static file under ```group_vars/all/all.yaml``` which holds the device username and password as well as the nautobot URL and token. This is a demo instance, and you would not want to store either of these in cleartext. 

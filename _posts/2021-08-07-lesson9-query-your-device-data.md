@@ -4,7 +4,7 @@ date: 2021-08-07 12:00:00 -500
 categories: [AnsibleWorkshop]
 tags: [ansible,ansibleworkshop,nautobot]
 image:
-#   path: /assets/img/headers/k3s_nautobot.webp
+  path: /assets/img/ansible_workshop/ansible_workshop.webp
 ---
 
 {% include embed/youtube.html id='g4aMH_pGo0Q' %}

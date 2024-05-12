@@ -4,7 +4,7 @@ date: 2021-08-06 12:00:00 -500
 categories: [AnsibleWorkshop]
 tags: [ansible,ansibleworkshop,nautobot]
 image:
-#   path: /assets/img/headers/k3s_nautobot.webp
+  path: /assets/img/ansible_workshop/ansible_workshop.webp
 ---
 
 So we just walked through building out a couple of YAML files to use with the Ansible Nautobot module. We will use the python Nautobot module to import not just one pod but all six pods created for this workshop initially. The benefit to using python is we can structure the YAML file using a more nested approach. 

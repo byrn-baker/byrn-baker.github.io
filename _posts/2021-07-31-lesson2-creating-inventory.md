@@ -4,7 +4,7 @@ date: 2021-07-31 12:00:00 -500
 categories: [AnsibleWorkshop]
 tags: [ansible,ansibleworkshop]
 image:
-#   path: /assets/img/headers/k3s_nautobot.webp
+  path: /assets/img/ansible_workshop/ansible_workshop.webp
 ---
 
 ## Section 2: Creating the inventory yaml file

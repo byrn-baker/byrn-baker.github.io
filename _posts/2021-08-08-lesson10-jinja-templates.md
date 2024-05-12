@@ -4,7 +4,7 @@ date: 2021-08-08 12:00:00 -500
 categories: [AnsibleWorkshop]
 tags: [ansible,ansibleworkshop,nautobot]
 image:
-#   path: /assets/img/headers/k3s_nautobot.webp
+  path: /assets/img/ansible_workshop/ansible_workshop.webp
 ---
 
 With nautobot, we can manage what is called "config_context." We can use this to store specific or generic configuration elements that are hard to find inside the available fields in the nautobot device or interface sections. We will be using config_context to keep a few different configuration elements. Where Nautobot differentiates itself from Netbox is the ability to manage the config_context with a git repo.

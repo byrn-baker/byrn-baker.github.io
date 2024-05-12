@@ -4,7 +4,7 @@ date: 2021-08-10 12:00:00 -500
 categories: [AnsibleWorkshop]
 tags: [ansible,ansibleworkshop,nautobot]
 image:
-#   path: /assets/img/headers/k3s_nautobot.webp
+  path: /assets/img/ansible_workshop/ansible_workshop.webp
 ---
 
 To recap a little bit, we are using Nautobot as our network source of truth. Ansible no longer needs static host_vars or a static inventory. All of these details can be pulled dynamically from Nautobot, then that data is run through a Jinja template and pushed to the devices. So now that the initial configuration is managed in this way, what about day-to-day operational changes? Can we keep the devices and Nautobot in sync? 

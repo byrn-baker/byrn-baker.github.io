@@ -4,7 +4,7 @@ date: 2021-07-30 12:00:00 -500
 categories: [AnsibleWorkshop]
 tags: [ansible,ansibleworkshop]
 image:
-#   path: /assets/img/headers/k3s_nautobot.webp
+  path: /assets/img/ansible_workshop/ansible_workshop.webp
 ---
 
 Open the terminal window. type pwd in the terminal and it should be showing you your home directory (/home/lab_user1) for example.
