@@ -52,7 +52,7 @@ Click on your new inventory and click the 'Hosts' menu on the top. Here is where
 <img src="/assets/img/ansible_workshop/section12_inventory_hosts.webp" alt="">
 
 The Host details are pretty simple as it just requires a name, now if you are not using DNS resolution, you will need to add some variables in the same fashion we used in our Ansible inventory YAML file. I have 3 Variables, Hosts IP, Hosts Network, and the Hosts SSH args in this example. The SSH args will allow AWX/Tower to connect to our lab Cisco VM which uses an outdated SSH algorithm, so this is required for AWX/Tower to connect via SSH to those Cisco VMs. Repeat that process for each host you would like to have in your inventory.
-<img src="/assets/img/ansible_workshop/section12_hosts_podr1.webp" alt="">
+<img src="/assets/img/ansible_workshop/section12_hosts_pod1r.webp" alt="">
 
 ### AWX/Tower Projects
 We need a Project to pull our playbooks that we will write in VScode and sync to GitHub.

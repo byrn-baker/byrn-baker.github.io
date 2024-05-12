@@ -55,11 +55,11 @@ Create /.github/workflows/cicd.yaml
 The build job will create a new image and assign a tag that corresponds to my release naming. Test will ensure that the image can be run without errors, and deploy will update the tag in the values.yaml. After updating the values.yaml it will commit and push the change back to the repo in the main branch. This will only happen if the above tests are successful as based on the if the github.event_name == release.
 
 From the main Code page there is a releases link on the right side. Click that to get started.
-<img src="/assets/lib/github-releases.webp" alt="">
+
 
 Create a release with whatever version or numbering you would like to use. Then click over onto actions and you can watch the CI/CD process. IT should look like this when completed.
 
-<img src="/assets/lib/github-cicd.webp" alt="">
+
 
 Now run a pull on your local machine. You should see that the tag has been updated in your values.yaml.
 
