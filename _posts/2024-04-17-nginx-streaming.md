@@ -141,7 +141,7 @@ $ sudo /usr/local/nginx/sbin/nginx -g 'daemon off;'
 ```
 
 ## Setting up and using FFMPEG
-I am going to use [blenders big buck bunny](http://bbb3d.renderfarming.net/download.html) video as our streaming example, so that you can easily replicate this yourself without OBS is a webcam.
+I am going to use [blenders big buck bunny](https://download.blender.org/peach/bigbuckbunny_movies/) video as our streaming example, so that you can easily replicate this yourself without OBS is a webcam.
 
 we need to also install ffmpeg, and use it to stream something to our nginx rtmp server 
 ```bash
