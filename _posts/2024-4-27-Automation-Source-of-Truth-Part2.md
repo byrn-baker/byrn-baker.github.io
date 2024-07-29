@@ -4,7 +4,7 @@ date: 2024-04-27 12:00:00 -500
 categories: [100DaysOfHomeLab]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials,100DaysOfHomeLab]
 image:
-  path: /assets/img/2024-04-27/source_of_truth-gif.gif
+  path: /assets/img/headers/source_of_truth-gif.gif
 ---
 ## Unleashing the Power of Nautobot Dynamic Inventory for Ansible
 I mentioned the [Nautobot Ansible module](https://github.com/nautobot/nautobot-ansible) briefly in the previous post, explaining how it can be utilized to manage data within Nautobot or even add new or update existing data. Additionally, it can serve as a dynamic inventory for Ansible. This is where the GraphQL part of Nautobot becomes extremely powerful.

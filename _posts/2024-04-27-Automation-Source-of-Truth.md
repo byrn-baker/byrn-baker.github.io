@@ -4,7 +4,7 @@ date: 2024-04-27 12:00:00 -500
 categories: [100DaysOfHomeLab]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials,100DaysOfHomeLab]
 image:
-  path: /assets/img/2024-04-27/source_of_truth-gif.gif
+  path: /assets/img/headers/source_of_truth-gif.gif
 ---
 ## The Source of Truth in Automation: A Critical Foundation
 In the ever-evolving landscape of automation, the concept of a "Source of Truth" (SoT) has emerged as a vital element for ensuring efficiency, reliability, and consistency in the automation process. A SoT is a centralized repository where all relevant and accurate data about an organization's infrastructure, processes, and policies are stored and managed.
