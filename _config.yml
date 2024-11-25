@@ -35,12 +35,13 @@ social:
   # Change to your full name.
   # It will be displayed as the default author of the posts and the copyright owner in the Footer
   name: Byrn Baker
-  email: example@domain.com # change to your email address
+  email: byrn@byrnbaker.me # change to your email address
   links:
     # The first element serves as the copyright owner's link
     - https://twitter.com/byrn_baker # change to your twitter homepage
     - https://github.com/byrn-baker # change to your github homepage
     - https://www.linkedin.com/in/byrnbaker/
+    - https://bsky.app/profile/byrn.bluesky.byrnbaker.me
 
 google_site_verification: # fill in to your verification string
 
@@ -48,7 +49,7 @@ google_site_verification: # fill in to your verification string
 # The end of `jekyll-seo-tag` settings
 
 google_analytics:
-  id: # fill in your Google Analytics ID
+  id: G-FL1CSV4XV9 # fill in your Google Analytics ID
 
 goatcounter:
   id: # fill in your Goatcounter ID
@@ -106,10 +107,10 @@ comments:
 # Self-hosted static assets, optional › https://github.com/cotes2020/chirpy-static-assets
 assets:
   self_host:
-    enabled: # boolean, keep empty means false
+    enabled: true # boolean, keep empty means false
     # specify the Jekyll environment, empty means both
     # only works if `assets.self_host.enabled` is 'true'
-    env: # [development | production]
+    env: production # [development | production]
 
 pwa:
   enabled: true # the option for PWA feature (installable)
