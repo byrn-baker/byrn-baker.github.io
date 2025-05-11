@@ -22,7 +22,7 @@ Goal: Build a repeatable automation lab foundation using Ubuntu, Containerlab, N
     - Containerlab
     - vrnetlab (for IOL)
     - nautobot-docker-compose
-    - Clone and configure:
+- Clone and configure:
     - containerlab-topology
     - nautobot-docker-compose
 
