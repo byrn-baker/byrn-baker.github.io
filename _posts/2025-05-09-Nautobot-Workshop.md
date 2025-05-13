@@ -50,7 +50,14 @@ Goal: Automate network inventory onboarding.
   - Create Sites, Devices, Interfaces, IP Addresses, Connections
 - Validate in Nautobot UI
 
-### Part 4: Dynamic Inventory from Nautobot
+### Part 4: Building ContainerLab topology from the Nautobot Inventory
+Goal: Create a virtual topology based on the Nautobot inventory that can be used for testing and validation.
+
+- Write GraphQL queries for device + interface inventory
+- Write a Jinja2 template to create the CLAB topology YAML
+- Write a Jinja2 template to create an initial configuration with MGMT reachability
+
+### Part 5: Dynamic Inventory from Nautobot
 Goal: Replace static inventory files with real-time Nautobot queries.
 
 - Install and configure nautobot.gql_inventory plugin

@@ -1,6 +1,6 @@
 ---
 title: Nautobot Workshop Blog Series - Part 3 Adding Devices to Nautobot via Ansible
-date: 2025-05-09 9:00:00 -500
+date: 2025-05-12 9:00:00 -500
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
 image:
@@ -1178,7 +1178,7 @@ devices:
     role: Provider Router
     location: Backbone
     device_type: iol
-    platform: IOS-XR
+    platform: IOS
     software_version: 17.12.01
     interfaces:
       - name: Ethernet0/0
@@ -1221,7 +1221,7 @@ devices:
     role: Provider Router
     location: Backbone
     device_type: iol
-    platform: IOS-XR
+    platform: IOS
     software_version: 17.12.01
     interfaces:
       - name: Ethernet0/0
@@ -1264,7 +1264,7 @@ devices:
     role: Provider Router
     location: Backbone
     device_type: iol
-    platform: IOS-XR
+    platform: IOS
     software_version: 17.12.01
     interfaces:
       - name: Ethernet0/0
@@ -1307,7 +1307,7 @@ devices:
     role: Provider Router
     location: Backbone
     device_type: iol
-    platform: IOS-XR
+    platform: IOS
     software_version: 17.12.01
     interfaces:
       - name: Ethernet0/0
@@ -1350,7 +1350,7 @@ devices:
     role: Provider Edge Router
     location: Backbone
     device_type: iol
-    platform: IOS-XR
+    platform: IOS
     software_version: 17.12.01
     interfaces:
       - name: Ethernet0/0
@@ -1387,7 +1387,7 @@ devices:
     role: Provider Edge Router
     location: Backbone
     device_type: iol
-    platform: IOS-XR
+    platform: IOS
     software_version: 17.12.01
     interfaces:
       - name: Ethernet0/0
@@ -1424,7 +1424,7 @@ devices:
     role: Provider Edge Router
     location: Backbone
     device_type: iol
-    platform: IOS-XR
+    platform: IOS
     software_version: 17.12.01
     interfaces:
       - name: Ethernet0/0
@@ -1914,6 +1914,7 @@ The next set of tasks creates the actual devices in Nautobot, assigning them a t
     status: Active
     state: present
   loop: "{{ software_versions }}"
+  register: software_version_results
 
 - name: Create devices
   networktocode.nautobot.device:
@@ -1924,9 +1925,55 @@ The next set of tasks creates the actual devices in Nautobot, assigning them a t
     device_type: "{{ item.device_type }}"
     role: "{{ item.role }}"
     location: "{{ item.location }}"
+    platform: "{{ item.platform | default(omit) }}"
     status: Active
     state: present
   loop: "{{ devices }}"
+  register: device_results
+
+{%raw%}
+- name: Build list of device/software_version ID pairs
+  set_fact:
+    software_assignments: >-
+      {{
+        software_assignments | default([]) +
+        [ {
+          "device_id": (
+            device_results.results
+            | selectattr('item.name', 'equalto', item.name)
+            | map(attribute='device.id')
+            | list
+            | first
+          ),
+          "software_version_id": (
+            software_version_results.results
+            | selectattr('item.version', 'equalto', item.software_version)
+            | map(attribute='software_version.id')
+            | list
+            | first
+          )
+        } ]
+      }}
+  loop: "{{ devices }}"
+  when: item.software_version is defined
+  {%endraw%}
+
+- name: Update device software_version via Nautobot API
+  uri:
+    url: "{{ nb_url }}/api/dcim/devices/{{ item.device_id }}/"
+    method: PATCH
+    headers:
+      Authorization: "Token {{ nb_token }}"
+      Content-Type: "application/json"
+    body: |
+      {
+        "software_version": "{{ item.software_version_id }}"
+      }
+    body_format: json
+    validate_certs: false
+    status_code: 200
+  loop: "{{ software_assignments }}"
+  when: item.device_id is not none and item.software_version_id is not none
 
 - name: Create interfaces for each device
   networktocode.nautobot.device_interface:
@@ -1937,6 +1984,7 @@ The next set of tasks creates the actual devices in Nautobot, assigning them a t
     name: "{{ item.1.name }}"
     type: "{{ item.1.type }}"
     mode: "{{ item.1.mode | default(omit) }}"
+    mgmt_only: "{% if item.1.ipv4_address is defined and '192.168.220.' in item.1.ipv4_address %}true{% else %}false{% endif %}"
     enabled: True
     status: Active
     state: present
