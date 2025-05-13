@@ -523,3 +523,15 @@ With the topology file built we can start the containerlab up
 │                                     │ ceos:4.34.0F                │         │ 3fff:172:20:20::5  │
 ╰─────────────────────────────────────┴─────────────────────────────┴─────────┴────────────────────╯
 ```
+
+You should now be able to ping the MGMT interfaces on all of you virtual routers. We used 192.168.220.x and you should be able to ping any of the assigned IPs of you virtual routers.
+
+```bash
+$ ping 192.168.220.3
+PING 192.168.220.3 (192.168.220.3) 56(84) bytes of data.
+64 bytes from 192.168.220.3: icmp_seq=1 ttl=253 time=7.27 ms
+64 bytes from 192.168.220.3: icmp_seq=2 ttl=253 time=1.65 ms
+```
+
+## Conclusion
+With Part 4 complete, we’ve successfully automated the generation of a fully connected Containerlab topology using Nautobot as the dynamic source of truth. By leveraging GraphQL, Ansible, and Jinja2, we've demonstrated how to extract structured device and interface data directly from Nautobot and translate it into a deployable lab environment—bridging the gap between inventory and infrastructure. This approach not only accelerates lab provisioning but ensures consistency and accuracy across virtual topologies. In the next post, we’ll take it a step further by pushing validated configurations to devices and exploring configuration compliance with Nautobot’s Golden Config plugin. Stay tuned as we continue building a production-grade automated lab workflow.
