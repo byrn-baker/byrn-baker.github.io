@@ -1974,7 +1974,7 @@ The next set of tasks creates the actual devices in Nautobot, assigning them a t
     status_code: 200
   loop: "{{ software_assignments }}"
   when: item.device_id is not none and item.software_version_id is not none
-
+{%raw%}
 - name: Create interfaces for each device
   networktocode.nautobot.device_interface:
     url: "{{ nb_url }}"
@@ -1989,7 +1989,7 @@ The next set of tasks creates the actual devices in Nautobot, assigning them a t
     status: Active
     state: present
   loop: "{{ devices | subelements('interfaces', 'skip_missing=True') }}"
-
+{%endraw%}
 - name: Add IPv4 addresses to interfaces
   networktocode.nautobot.ip_address_to_interface:
     url: "{{ nb_url }}"
