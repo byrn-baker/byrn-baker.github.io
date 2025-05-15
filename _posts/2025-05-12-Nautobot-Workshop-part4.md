@@ -167,7 +167,7 @@ roles/
 6 directories, 3 files
 ```
 
-In our ```main.yml``` under the tasks folder we will build the tasks to perform the GraphQL query and then template the output into a new YAML file called ```containerlab-topology.yml```. Beisdes the device name and interfaces, the model, platform and software version, and connected interfaces are important because we will use those variable in our Jinja template that builds the topology.
+In our ```main.yml``` under the tasks folder we will build the tasks to perform the GraphQL query and then template the output into a new YAML files called ```initial_configs.j2```, and ```containerlab-topology.yml```. Beisdes the device name and interfaces, the model, platform and software version, and connected interfaces are important because we will use those variable in our Jinja template that builds the topology.
 
 main.yml:
 ```yaml
@@ -181,6 +181,9 @@ main.yml:
       {
         devices  {
           name
+          primary_ip4 {
+            address
+          }
           device_type{
             model
             manufacturer {
@@ -210,14 +213,79 @@ main.yml:
       }
   register: "nb_devices"
 
+- name: Create initial Configs for each device
+  template:
+    src: "initial_configs.j2"
+    dest: "~/Nautobot-Workshop/clabs/startup-configs/{{ item.name }}.txt"
+  loop: "{{ nb_devices.data.devices }}"
+  when: item.device_type.model == 'ceos'
+
 - name: Render Containerlab topology
   template:
     src: "containerlab_topology.j2"
     dest: "~/Nautobot-Workshop/clabs/containerlab-topology.yml"
 ```
 
-Update the ```templates/containerlab_topology.j2``` file with the following
+Update the two templates ```tempaltes/initial_configs.j2```, and ```templates/containerlab_topology.j2``` files with the following
 
+initial_configs.j2:
+```jinja
+{%raw%}
+#jinja2: lstrip_blocks: True, trim_blocks: True
+{% if item.device_type.model == "ceos" %}
+no aaa root
+!
+username admin privilege 15 role network-admin secret 0 admin
+!
+management api http-commands
+   vrf clab-mgmt
+      no shutdown
+   protocol http
+   protocol https
+   no shutdown
+!
+no service interface inactive port-id allocation disabled
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+vrf instance clab-mgmt
+   description clab-mgmt
+!
+hostname {{ item.name }}
+!
+spanning-tree mode mstp
+!
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+management api gnmi
+   transport grpc default
+!
+management api netconf
+   transport ssh default
+!
+{% for int in item.interfaces if int.mgmt_only == true %}
+interface {{ int.name}}
+ vrf forwarding clab-mgmt
+ ip address {{ int.ip_addresses[0].address }}
+!
+{% endfor %}
+!
+ip routing
+!
+ip routing vrf clab-mgmt
+!
+{% for int in item.interfaces if int.mgmt_only == true %}
+ip route vrf clab-mgmt 0.0.0.0 0.0.0.0 {{ int.name }} 192.168.220.1
+{% endfor %}
+{% endif %}
+{%endraw%}
+```
+
+containerlab_topology.j2`:
 ```jinja
 {%raw%}
 #jinja2: lstrip_blocks: True, trim_blocks: True
@@ -227,6 +295,7 @@ Update the ```templates/containerlab_topology.j2``` file with the following
 name: nautobot_workshop
 mgmt:
   network: clab-mgmt
+  ipv4-subnet: 192.168.220.0/24
 
 topology:
   nodes:
@@ -244,7 +313,10 @@ topology:
     {{ device.name }}:
       kind: {{ kind }}
       image: {{ image }}
-      mgmt-ipv4: {{ device.primary_ip4.address | ipaddress('address') }}
+      mgmt-ipv4: {{ device.primary_ip4.address | ansible.utils.ipaddr('address') }}
+      {% if "ceos" in model %}
+      startup-config: ./startup-configs/{{ device.name }}.txt
+      {% endif %}
       {% if image_base is defined and image_base in delay_targets %}
       startup-delay: {{ global_delay[0] * 30 }}
       {% set _ = global_delay.append(global_delay.pop() + 1) %}
@@ -274,7 +346,8 @@ topology:
 {%endraw%}
 ```
 
-This Jinja2 template dynamically generates the Containerlab topology file based on device data retrieved from Nautobot via GraphQL. It filters out any devices that are missing a software_version or platform, ensuring only complete and deployable nodes are included. For each eligible device, it sets the appropriate kind and image based on the device type and software version—using a custom image naming convention for standard nodes and a simplified image tag for cEOS nodes. Devices that match specific image types (like vr-xrv9k or n9kv) receive a calculated startup-delay to avoid startup conflicts. Special logic is included for a device named clabbr220, which is designated as a bridge node rather than a container, enabling external host interface mapping for connectivity testing or hybrid topologies. The links section builds connections between interfaces by inspecting mutual connections and ensures each link is only declared once using a deduplication mechanism. The result is a topology that accurately reflects the modeled lab environment while supporting external L2 integration and startup timing for complex images.
+Recapping:
+- This Ansible playbook automates the process of generating a Containerlab topology and initial startup configurations for devices managed in Nautobot. The workflow begins with a GraphQL query to Nautobot, retrieving a rich dataset for all devices, including their names, models, platforms, software versions, IP addresses, and interface connections. This data is stored in the nb_devices variable and used in two subsequent templating tasks. The first template (initial_configs.j2) builds a startup configuration for each ceos device, setting up management VRFs, IP addressing, and routing. The second template (containerlab_topology.j2) dynamically constructs the entire Containerlab topology YAML by iterating over the devices and their connections. It uses device metadata to set the appropriate kind and image, applies startup configs to ceos nodes, and adds startup delays for specific image types. Additionally, the link definitions are intelligently deduplicated using a seen list to ensure that each point-to-point link is only rendered once. Together, these tasks allow the automation of network lab deployment using Nautobot as a source of truth.
 
 I am using a trunked port for my container lab deployment and so I can add additional vlans to my Ubuntu host operating system. I am going to use this method to create a new interface that uses vlan 220 for the mgmt of my virtual devices. In my netplan config I've added a new interface with the vlan id and no IP addressing. I've also added a bridge called clabbr220 included my new tagged interface. I can then reference the name of this bridge in my containerlab topology file and connect a virtualized nodes interface to it. We will assign our management addressing to these interfaces in our intitial configurations which the virtualized nodes will use on boot.
 
