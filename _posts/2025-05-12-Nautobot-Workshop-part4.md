@@ -210,67 +210,10 @@ main.yml:
       }
   register: "nb_devices"
 
-- name: Create initial Configs for each device
-  template:
-    src: "initial_configs.j2"
-    dest: "~/Nautobot-Workshop/clabs/startup-configs/{{ item.name }}.txt.partial"
-  loop: "{{ nb_devices.data.devices }}"
-
-
 - name: Render Containerlab topology
   template:
     src: "containerlab_topology.j2"
     dest: "~/Nautobot-Workshop/clabs/containerlab-topology.yml"
-```
-
-Update the ```templates/initial_configs.j2``` file with the following
-
-```jinja2
-{%raw%}
-#jinja2: lstrip_blocks: True, trim_blocks: True
-{% if item.device_type.model == "iol" %}
-vrf definition clabbr220
- description clabbr220
- !
- address-family ipv4
- exit-address-family
- !
- address-family ipv6
- exit-address-family
-!
-
-{% for int in item.interfaces if int.mgmt_only == true %}
-interface {{ int.name }}
- vrf forwarding clabbr220
- {% for addr in int.ip_addresses %}
-  ip address {{ addr.address | ipaddr('address') }} {{ addr.address | ipaddr('netmask') }}
- {% endfor %}
- no shutdown
-{% endfor %}
-!
-{% for int in item.interfaces if int.mgmt_only == true %}
-ip route vrf clabbr220 0.0.0.0 0.0.0.0 {{ int.name }} 192.168.220.1
-{% endfor %}
-
-{% elif item.device_type.model == "ceos" %}
-vrf instance clabbr220
-   description clabbr220
-!
-{% for int in item.interfaces if int.mgmt_only == true %}
-interface {{ int.name }}
- no switchport
- vrf forwarding clabbr220
- {% for addr in int.ip_addresses %}
-  ip address {{ addr.address | ipaddr('address') }} {{ addr.address | ipaddr('netmask') }}
- {% endfor %}
- no shutdown
-{% endfor %}
-!
-{% for int in item.interfaces if int.mgmt_only == true %}
-ip route vrf clabbr220 0.0.0.0 0.0.0.0 {{ int.name }} 192.168.220.1
-{% endfor %}
-{% endif %}
-{%endraw%}
 ```
 
 Update the ```templates/containerlab_topology.j2``` file with the following
@@ -282,6 +225,8 @@ Update the ```templates/containerlab_topology.j2``` file with the following
 {% set global_delay = [0] %}
 
 name: nautobot_workshop
+mgmt:
+  network: clab-mgmt
 
 topology:
   nodes:
@@ -299,16 +244,13 @@ topology:
     {{ device.name }}:
       kind: {{ kind }}
       image: {{ image }}
+      mgmt-ipv4: {{ device.primary_ip4.address | ipaddress('address') }}
       {% if image_base is defined and image_base in delay_targets %}
       startup-delay: {{ global_delay[0] * 30 }}
       {% set _ = global_delay.append(global_delay.pop() + 1) %}
       {% endif %}
       env:
         HOSTNAME: {{ device.name }}
-  {% endif %}
-  {% if device.name == "clabbr220" %}
-    clabbr220:
-      kind: bridge
   {% endif %}
 {% endfor %}
 
@@ -346,7 +288,7 @@ network:
             dhcp4: false
             dhcp6: false
     bridges:
-      clabbr220:
+      clab-mgmt:
         interfaces: [bond0.220]
         parameters:
           stp: false

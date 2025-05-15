@@ -939,6 +939,7 @@ devices:
     device_type: iol
     platform: IOS
     software_version: 17.12.01
+    primary_ip4: 192.168.220.9/24
     interfaces:
       - name: Ethernet0/1
         type: 1000base-t
@@ -958,12 +959,10 @@ devices:
         ipv6_address: 2001:db8:102:12::1/64
         z_device: West-Spine02
         z_interface: eth7
-      - name: Ethernet1/0
+      - name: Ethernet0/0
         type: 1000base-t
-        vrf: clabbr220
+        vrf: clab-mgmt
         ipv4_address: 192.168.220.9/24
-        z_device: clabbr220
-        z_interface: eth8
       - name: Loopback0
         type: VIRTUAL
         ipv4_address: 100.0.254.111/32
@@ -974,6 +973,7 @@ devices:
     device_type: iol
     platform: IOS
     software_version: 17.12.01
+    primary_ip4: 192.168.220.10/24
     interfaces:
       - name: Ethernet0/1
         type: 1000base-t
@@ -993,12 +993,10 @@ devices:
         ipv6_address: 2001:db8:101:12::1/64
         z_device: East-Spine02
         z_interface: eth7
-      - name: Ethernet1/0
+      - name: Ethernet0/0
         type: 1000base-t
-        vrf: clabbr220
+        vrf: clab-mgmt
         ipv4_address: 192.168.220.10/24
-        z_device: clabbr220
-        z_interface: eth9
       - name: Loopback0
         type: VIRTUAL
         ipv4_address: 100.0.254.112/32
@@ -1009,6 +1007,7 @@ devices:
     device_type: ceos
     platform: EOS
     software_version: 4.34.0F
+    primary_ip4: 192.168.220.18/24
     interfaces:
       - name: Loopback0
         type: VIRTUAL
@@ -1050,17 +1049,17 @@ devices:
         type: 1000base-t
       - name: eth6
         type: 1000base-t
-      - name: eth8
+      - name: Management0
         type: 1000base-t
+        vrf: clab-mgmt
         ipv4_address: 192.168.220.18/24
-        z_device: clabbr220
-        z_interface: eth10
   - name: East-Leaf02
     role: Datacenter Leaf
     location: East Side Data Center 
     device_type: ceos
     platform: EOS
     software_version: 4.34.0F
+    primary_ip4: 192.168.220.19/24
     interfaces:
       - name: eth1
         type: 1000base-t
@@ -1084,17 +1083,17 @@ devices:
         type: 1000base-t
       - name: eth7
         type: 1000base-t
-      - name: eth8
+      - name: Management0
         type: 1000base-t
+        vrf: clab-mgmt
         ipv4_address: 192.168.220.19/24
-        z_device: clabbr220
-        z_interface: eth11
   - name: East-Spine01
     role: Datacenter Spine
     location: East Side Data Center 
     device_type: ceos
     platform: EOS
     software_version: 4.34.0F
+    primary_ip4: 192.168.220.16/24
     interfaces:
       - name: Loopback0
         type: VIRTUAL
@@ -1126,18 +1125,17 @@ devices:
         ipv6_address: 2001:db8:102:11::11/64
         z_device: CE2
         z_interface: Ethernet0/2
-      - name: eth8
+      - name: Management0
         type: 1000base-t
-        vrf: clabbr220
+        vrf: clab-mgmt
         ipv4_address: 192.168.220.16/24
-        z_device: clabbr220
-        z_interface: eth17
   - name: East-Spine02
     role: Datacenter Spine
     location: East Side Data Center 
     device_type: ceos
     platform: EOS
     software_version: 4.34.0F
+    primary_ip4: 192.168.220.17/24
     interfaces:
       - name: Loopback0
         type: VIRTUAL
@@ -1169,17 +1167,17 @@ devices:
         ipv6_address: 2001:db8:102:12::12/64
         z_device: CE2
         z_interface: Ethernet0/3
-      - name: eth8
+      - name: Management0
         type: 1000base-t
         ipv4_address: 192.168.220.17/24
-        z_device: clabbr220
-        z_interface: eth12
+        vrf: clab-mgmt
   - name: P1
     role: Provider Router
     location: Backbone
     device_type: iol
     platform: IOS
     software_version: 17.12.01
+    primary_ip4: 192.168.220.2/24
     interfaces:
       - name: Ethernet0/0
         type: 1000base-t
@@ -1207,12 +1205,10 @@ devices:
         ipv6_address: 2001:db8:100:11::1/64
         z_device: PE1
         z_interface: Ethernet0/1
-      - name: Ethernet1/2
+      - name: Ethernet0/0
         type: 1000base-t
-        vrf: clabbr220
+        vrf: clab-mgmt
         ipv4_address: 192.168.220.2/24
-        z_device: clabbr220
-        z_interface: eth0
       - name: Loopback0
         type: VIRTUAL
         ipv4_address: 100.0.254.1/32
@@ -1223,6 +1219,7 @@ devices:
     device_type: iol
     platform: IOS
     software_version: 17.12.01
+    primary_ip4: 192.168.220.3/24
     interfaces:
       - name: Ethernet0/0
         type: 1000base-t
@@ -1250,12 +1247,10 @@ devices:
         ipv6_address: 2001:db8:100:22::2/64
         z_device: PE3
         z_interface: Ethernet0/1
-      - name: Ethernet1/1
+      - name: Ethernet0/0
         type: 1000base-t
-        vrf: clabbr220
+        vrf: clab-mgmt
         ipv4_address: 192.168.220.3/24
-        z_device: clabbr220
-        z_interface: eth1
       - name: Loopback0
         type: VIRTUAL
         ipv4_address: 100.0.254.2/32
@@ -1266,6 +1261,7 @@ devices:
     device_type: iol
     platform: IOS
     software_version: 17.12.01
+    primary_ip4: 192.168.220.4/24
     interfaces:
       - name: Ethernet0/0
         type: 1000base-t
@@ -1293,12 +1289,10 @@ devices:
         ipv6_address: 2001:db8:100:33::3/64
         z_device: PE2
         z_interface: Ethernet0/1
-      - name: Ethernet1/1
+      - name: Ethernet0/0
         type: 1000base-t
-        vrf: clabbr220
+        vrf: clab-mgmt
         ipv4_address: 192.168.220.4/24
-        z_device: clabbr220
-        z_interface: eth2
       - name: Loopback0
         type: VIRTUAL
         ipv4_address: 100.0.254.3/32
@@ -1309,6 +1303,7 @@ devices:
     device_type: iol
     platform: IOS
     software_version: 17.12.01
+    primary_ip4: 192.168.220.5/24
     interfaces:
       - name: Ethernet0/0
         type: 1000base-t
@@ -1336,12 +1331,10 @@ devices:
         ipv6_address: 2001:db8:100:43::4/64
         z_device: PE3
         z_interface: Ethernet0/2
-      - name: Ethernet1/1
+      - name: Ethernet0/0
         type: 1000base-t
-        vrf: clabbr220
+        vrf: clab-mgmt
         ipv4_address: 192.168.220.5/24
-        z_device: clabbr220
-        z_interface: eth3
       - name: Loopback0
         type: VIRTUAL
         ipv4_address: 100.0.254.4/32
@@ -1352,6 +1345,7 @@ devices:
     device_type: iol
     platform: IOS
     software_version: 17.12.01
+    primary_ip4: 192.168.220.6/24
     interfaces:
       - name: Ethernet0/0
         type: 1000base-t
@@ -1373,12 +1367,10 @@ devices:
         ipv6_address: 2001:db8:100:111::11/64
         z_device: CE1
         z_interface: Ethernet0/1
-      - name: Ethernet1/0
+      - name: Ethernet0/0
         type: 1000base-t
-        vrf: clabbr220
+        vrf: clab-mgmt
         ipv4_address: 192.168.220.6/24
-        z_device: clabbr220
-        z_interface: eth4
       - name: Loopback0
         type: VIRTUAL
         ipv4_address: 100.0.254.11/32
@@ -1389,6 +1381,7 @@ devices:
     device_type: iol
     platform: IOS
     software_version: 17.12.01
+    primary_ip4: 192.168.220.7/24
     interfaces:
       - name: Ethernet0/0
         type: 1000base-t
@@ -1410,12 +1403,10 @@ devices:
         ipv6_address: 2001:db8:100:222::22/64
         z_device: CE2
         z_interface: Ethernet0/1
-      - name: Ethernet1/0
+      - name: Ethernet0/0
         type: 1000base-t
-        vrf: clabbr220
+        vrf: clab-mgmt
         ipv4_address: 192.168.220.7/24
-        z_device: clabbr220
-        z_interface: eth5
       - name: Loopback0
         type: VIRTUAL
         ipv4_address: 100.0.254.12/32
@@ -1426,6 +1417,7 @@ devices:
     device_type: iol
     platform: IOS
     software_version: 17.12.01
+    primary_ip4: 192.168.220.8/24
     interfaces:
       - name: Ethernet0/0
         type: 1000base-t
@@ -1443,12 +1435,10 @@ devices:
         z_interface: Ethernet1/0
       - name: Ethernet0/3
         type: 1000base-t
-      - name: Ethernet1/0
+      - name: Ethernet0/0
         type: 1000base-t
-        vrf: clabbr220
+        vrf: clab-mgmt
         ipv4_address: 192.168.220.8/24
-        z_device: clabbr220
-        z_interface: eth6
       - name: Loopback0
         type: VIRTUAL
         ipv4_address: 100.0.254.13/32
@@ -1459,6 +1449,7 @@ devices:
     device_type: iol
     platform: IOS
     software_version: 17.12.01
+    primary_ip4: 192.168.220.11/24
     interfaces:
       - name: Ethernet0/1
         type: 1000base-t
@@ -1474,12 +1465,10 @@ devices:
         z_interface: Ethernet0/3
       - name: Ethernet0/3
         type: 1000base-t
-      - name: Ethernet1/0
+      - name: Ethernet0/0
         type: 1000base-t
-        vrf: clabbr220
+        vrf: clab-mgmt
         ipv4_address: 192.168.220.11/24
-        z_device: clabbr220
-        z_interface: eth7
       - name: Loopback0
         type: VIRTUAL
         ipv4_address: 100.0.254.5/32
@@ -1490,6 +1479,7 @@ devices:
     device_type: ceos
     platform: EOS
     software_version: 4.34.0F
+    primary_ip4: 192.168.220.14/24
     interfaces:
       - name: Loopback0
         type: VIRTUAL
@@ -1535,17 +1525,17 @@ devices:
         type: 1000base-t
         z_device: CE1
         z_interface: Ethernet0/2
-      - name: eth8
+      - name: Management0
         type: 1000base-t
         ipv4_address: 192.168.220.14/24
-        z_device: clabbr220
-        z_interface: eth13
+        vrf: clab-mgmt
   - name: West-Leaf02
     role: Datacenter Leaf
     location: West Side Data Center 
     device_type: ceos
     platform: EOS
     software_version: 4.34.0F
+    primary_ip4: 192.168.220.15/24
     interfaces:
       - name: Loopback0
         type: VIRTUAL
@@ -1589,17 +1579,17 @@ devices:
         type: 1000base-t
       - name: eth7
         type: 1000base-t
-      - name: eth8
+      - name: Management0
         type: 1000base-t
         ipv4_address: 192.168.220.15/24
-        z_device: clabbr220
-        z_interface: eth14
+        vrf: clab-mgmt
   - name: West-Spine01
     role: Datacenter Spine
     location: West Side Data Center 
     device_type: ceos
     platform: EOS
     software_version: 4.34.0F
+    primary_ip4: 192.168.220.12/24
     interfaces:
       - name: Loopback0
         type: VIRTUAL
@@ -1629,17 +1619,17 @@ devices:
         type: 1000base-t
         ipv4_address: 100.2.11.11/24
         ipv6_address: 2001:db8:102:11::11/64
-      - name: eth8
+      - name: Management0
         type: 1000base-t
         ipv4_address: 192.168.220.12/24
-        z_device: clabbr220
-        z_interface: eth15
+        vrf: clab-mgmt
   - name: West-Spine02
     role: Datacenter Spine
     location: West Side Data Center 
     device_type: ceos
     platform: EOS
     software_version: 4.34.0F
+    primary_ip4: 192.168.220.13/24
     interfaces:
       - name: Loopback0
         type: VIRTUAL
@@ -1671,88 +1661,10 @@ devices:
         ipv6_address: 2001:db8:102:12::12/64
         z_device: CE1
         z_interface: Ethernet0/3
-      - name: eth8
+      - name: Management0
         type: 1000base-t
         ipv4_address: 192.168.220.13/24
-        z_device: clabbr220
-        z_interface: eth16
-  - name: clabbr220
-    role: mgmt_switch
-    location: Backbone
-    device_type: network
-    interfaces:
-      - name: eth0
-        type: 1000base-t
-        z_device: P1
-        z_interface: Ethernet1/2
-      - name: eth1
-        type: 1000base-t
-        z_device: P2
-        z_interface: Ethernet1/1
-      - name: eth2
-        type: 1000base-t
-        z_device: P3
-        z_interface: Ethernet1/1
-      - name: eth3
-        type: 1000base-t
-        z_device: P4
-        z_interface: Ethernet1/1
-      - name: eth4
-        type: 1000base-t
-        z_device: PE1
-        z_interface: Ethernet1/0
-      - name: eth5
-        type: 1000base-t
-        z_device: PE2
-        z_interface: Ethernet1/0
-      - name: eth6
-        type: 1000base-t
-        z_device: PE3
-        z_interface: Ethernet1/0
-      - name: eth7
-        type: 1000base-t
-        z_device: RR1
-        z_interface: Ethernet1/0
-      - name: eth8
-        type: 1000base-t
-        z_device: CE1
-        z_interface: Ethernet1/0
-      - name: eth9
-        type: 1000base-t
-        z_device: CE2
-        z_interface: Ethernet1/0
-      - name: eth10
-        type: 1000base-t
-        z_device: East-Leaf01
-        z_interface: eth8
-      - name: eth11
-        type: 1000base-t
-        z_device: East-Leaf02
-        z_interface: eth8
-      - name: eth12
-        type: 1000base-t
-        z_device: East-Spine02
-        z_interface: eth8
-      - name: eth13
-        type: 1000base-t
-        z_device: West-Leaf01
-        z_interface: eth8
-      - name: eth14
-        type: 1000base-t
-        z_device: West-Leaf02
-        z_interface: eth8
-      - name: eth15
-        type: 1000base-t
-        z_device: West-Spine01
-        z_interface: eth8
-      - name: eth16
-        type: 1000base-t
-        z_device: West-Spine02
-        z_interface: eth8
-      - name: eth17
-        type: 1000base-t
-        z_device: East-Spine01
-        z_interface: eth8
+        vrf: clab-mgmt
 ```
 
 ### Managing Nautobot with Ansible - Orginizational Models
@@ -2015,6 +1927,17 @@ The next set of tasks creates the actual devices in Nautobot, assigning them a t
       device: "{{ item.0.name }}"
   loop: "{{ devices | subelements('interfaces', 'skip_missing=True') }}"
   when: item.1.ipv6_address is defined
+
+- name: Assign Primary IPv4 to Device
+  networktocode.nautobot.device:
+    url: "{{ nb_url }}"
+    token: "{{ nb_token }}"
+    validate_certs: false
+    name: "{{ item.name }}"
+    primary_ip4: "{{ item.primary_ip4 }}"
+    status: Active
+    state: present
+  loop: "{{ devices }}"
 
 - name: Create cable within Nautobot
   networktocode.nautobot.cable:
