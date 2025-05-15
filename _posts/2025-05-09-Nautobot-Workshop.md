@@ -57,18 +57,17 @@ Goal: Create a virtual topology based on the Nautobot inventory that can be used
 - Write a Jinja2 template to create the CLAB topology YAML
 - Write a Jinja2 template to create an initial configuration with MGMT reachability
 
-### Part 5: Dynamic Inventory from Nautobot
-Goal: Replace static inventory files with real-time Nautobot queries.
+### Part 5 - Nautobot Golden Configuration - Configuration Backups
+Goal: Enable automated configuration backups from network devices to a Git repository using the Nautobot Golden Configuration app.
 
-- Install and configure nautobot.gql_inventory plugin
-- Write GraphQL queries for device + interface inventory
-- Use ansible-inventory to validate dynamic source
-- Demonstrate targeted playbook execution using dynamic inventory
-
-### Part 6: Configuration Compliance Checks
-Goal: Track and enforce consistency across devices.
-
-- Configure compliance rules per platform or device role
-- Define expected patterns (e.g. NTP servers, banners, ACLs)
-- Run compliance check job
-- View results and identify drift
+  - Configure GitHub secret in Nautobot Secrets
+  - Create a Secrets Group for GitHub token access
+  - Add and sync a Git repository to store backups
+  - Prepare Git repo with jobs/ and backup-configs/ folders
+  - Create a GraphQL query for SOT Aggregation
+  - Update Golden Config Settings to:
+  - Define backup paths
+  - Associate SOT Aggregation Query
+  - Enable required Golden Config Jobs
+  - Execute Backup Configurations Job for EOS and IOS devices
+  - Confirm backups stored in Git under backup-configs/
