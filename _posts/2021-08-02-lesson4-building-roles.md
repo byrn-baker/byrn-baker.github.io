@@ -77,17 +77,8 @@ collections:
 ```
 Create a new file under 'add_vlan/tasks/' called 'main.yml'. This file will be structured similar to the Playbook we created to pull down a list of vlans from the podxsw3 host. In this play we will use a Jinja2 template to create and name the vlans for the 3 user groups (Users, Servers, Guests).
 
-In the main.yml file we will use the playbook tasks structure. Roles simply replace tasks of a playbook.
-```yaml
----
-- name: Add new vlan to vlan database on {{ inventory_hostname }}
-  cisco.ios.ios_config:
-    src: add_vlan.j2
+In the [main.yml](https://github.com/byrn-baker/Ansible-Workshop/blob/main/Cisco_Pod/roles/access_switch/add_vlan/tasks/main.yml) file we will use the playbook tasks structure. Roles simply replace tasks of a playbook.
 
-- name: Saving the running config on {{ inventory_hostname }}
-  ios_config:
-    save_when: always
-```
 Lets go over what we are doing:
 * ```name: Add new vlan to vlan database on {{ inventory_hostname }}``` - The name of the task appears in the Ansible console to let the operator know what is being performed in the background. "{{ }}" with Ansible anything between a double bracket is a variable and we can fill this in with anything available to Ansible like a hostname for example.
 * ```src: add_vlan.j2``` - This tells Ansible what file in the templates folder to use in rendering our text that will be pushed to the cisco device.

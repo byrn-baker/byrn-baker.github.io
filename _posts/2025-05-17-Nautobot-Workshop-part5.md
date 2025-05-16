@@ -34,10 +34,10 @@ Next create a secrets group by using the blue plus sign and from the Access type
 
 Now click the Extensibility menu and then the Git Repositories blue plus sign under "DATA SOURCES" to add your github repository. 
 
-Give a name and in the remote URL use the HTTP option from the github green code button under Local Clone. Use the branch where you would like to keep this data, and then select all of the provides you would like to sync between nautobot and this repository. In my example I have select all options, because we will use most of them in this series.
+Give a name and in the remote URL use the HTTP option from the github green code button under Local Clone. Use the branch where you would like to keep this data, and then select all of the "provides" you would like to sync between nautobot and this repository, leave the jinja templates unselected. In my example I have select all options, but the "jinja templates" because we will use most of them in this series.
 <img src="/assets/img/nautobot_workshop/github_repo.webp" alt="">
 
-> You will want to folders in your Repos root, "jobs" and "backup-configs". In the jobs folder create a blank file called ```__initi__.py```. It is important for this specific example that you at least select backup configs.
+> You will want to create two folders in your Repos root, "jobs" and "backup-configs". In the jobs folder create a blank file called ```__initi__.py```. It is important for this specific example that you at least select backup configs.
 {: .prompt-tip }
 
 At the bottom click the create & sync button. If all goes well you should see a completed status on this job.

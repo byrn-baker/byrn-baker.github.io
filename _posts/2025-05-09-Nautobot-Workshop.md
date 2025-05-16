@@ -71,3 +71,14 @@ Goal: Enable automated configuration backups from network devices to a Git repos
   - Enable required Golden Config Jobs
   - Execute Backup Configurations Job for EOS and IOS devices
   - Confirm backups stored in Git under backup-configs/
+
+### Part 6 - Nautobot Golden Configuration - Intended Configurations
+Goal: Validate that device configurations match the intended state generated from Nautobot source-of-truth data.
+
+  - Define what configuration compliance means in Nautobot
+  - Set up a Git repo for intended configuration templates
+  - Create modular Jinja2 templates by platform and role (e.g., IOS, EOS)
+  - Update Golden Config Settings to point to intended config templates
+  - Extend the container environment to support custom Jinja filters
+  - Generate and validate intended configurations
+  - Run the compliance job and view compliance status in the Nautobot UI
