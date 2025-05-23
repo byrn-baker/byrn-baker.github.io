@@ -1,6 +1,6 @@
 ---
 title: Nautobot Workshop Blog Series - Part 3 Adding Devices to Nautobot via Ansible
-date: 2025-05-12 9:00:00 -500
+date: 2025-06-26 9:00:00 -500
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
 image:

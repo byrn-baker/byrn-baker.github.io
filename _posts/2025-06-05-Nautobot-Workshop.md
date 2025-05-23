@@ -1,6 +1,6 @@
 ---
 title: Nautobot Workshop Blog Series - Overview
-date: 2025-05-09 9:00:00 -500
+date: 2025-06-05 9:00:00 -500
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
 image:
@@ -82,3 +82,31 @@ Goal: Validate that device configurations match the intended state generated fro
   - Extend the container environment to support custom Jinja filters
   - Generate and validate intended configurations
   - Run the compliance job and view compliance status in the Nautobot UI
+
+### Part 7 - Nautobot Ansible Dynamic Inventory
+Goal: Use Nautobot as a dynamic inventory source in Ansible to generate and deploy real device configurations.
+
+  - Configure Ansible to use Nautobot’s GraphQL API for dynamic inventory
+  - Secure API access with environment variables and Ansible Vault
+  - Build an Ansible role to query device data from Nautobot
+  - Use Jinja2 templates to generate platform-specific configurations
+  - Push configurations to Cisco devices using cisco.ios.ios_config
+  - Demonstrate how source-of-truth data drives real configuration deployment
+
+### Part 8 - Nautobot Config Context and Custom Fields
+Goal: Leverage Nautobot's Config Context and Custom Fields to drive dynamic, structured configuration generation from a Git-backed source of truth.
+
+  - Define and store structured Config Context data in Git for centralized version control
+  - Create Config Context Schemas to validate and organize data for:
+    - VRF definitions
+    - User account configurations
+    - Global protocol settings (OSPF, MPLS, BGP)
+    - Cisco HTTP server settings (e.g., `ip http server`)
+    - SSH access configurations
+    - Line VTY parameters
+  - Assign Config Contexts to devices based on role, location, or other criteria
+  - Enable context weighting to ensure fallback/default configurations
+  - Create interface-level Custom Fields to track OSPF-specific metadata:
+    - Interface type (point-to-point, point-to-multipoint)
+    - Area assignment
+  - Use this structured data in Jinja2 templates to generate context-aware, platform-specific configurations

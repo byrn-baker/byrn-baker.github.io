@@ -1,6 +1,6 @@
 ---
 title: Nautobot Workshop Blog Series - Part 5 - Nautobot Golden Configuration - Configuration Backups
-date: 2025-05-17 9:00:00 -500
+date: 2025-07-10 9:00:00 -500
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
 image:
