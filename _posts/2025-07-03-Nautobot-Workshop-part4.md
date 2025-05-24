@@ -1,6 +1,6 @@
 ---
 title: Nautobot Workshop Blog Series - Part 4 Building ContainerLab topology from the Nautobot Inventory
-date: 2025-07-03 9:00:00 -500
+date: 2025-07-03 9:00:00 -6
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
 image:

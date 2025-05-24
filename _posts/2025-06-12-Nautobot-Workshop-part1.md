@@ -1,6 +1,6 @@
 ---
 title: Nautobot Workshop Blog Series - Part 1 Environment Setup
-date: 2025-06-12 9:00:00 -500
+date: 2025-06-12 9:00:00 -6
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
 image:
@@ -115,8 +115,12 @@ Ubuntu 24.04 (VM, or bare metal)
    ```
 
 9. In the ```nautobot-docker-compose``` folder make sure you have your ```environments/local.env``` & ```environments/creds.env``` exists and your passwords are set how you want them.
+10. Update the [pyproject.toml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/nautobot-docker-compose/pyproject.toml) to include the Nautobot APPs we will be using in our workshop.
 
 ```bash
+(nautobot-docker-compose-py3.12) ubuntu@containerlabs:~/nautobot-docker-compose$ poetry lock
+(nautobot-docker-compose-py3.12) ubuntu@containerlabs:~/nautobot-docker-compose$ poetry install
+(nautobot-docker-compose-py3.12) ubuntu@containerlabs:~/nautobot-docker-compose$ invoke build
 (nautobot-docker-compose-py3.12) ubuntu@containerlabs:~/nautobot-docker-compose$ invoke debug
 /home/ubuntu/nautobot-docker-compose/tasks.py:263: SyntaxWarning: invalid escape sequence '\$'
   export_cmd = 'exec db sh -c "mysqldump -u \${NAUTOBOT_DB_USER} –p \${NAUTOBOT_DB_PASSWORD} \${NAUTOBOT_DB_NAME} nautobot > /tmp/nautobot.sql"'  # noqa: W605 pylint: disable=anomalous-backslash-in-string
@@ -247,32 +251,6 @@ If you are using VSCODE you can click the ```http://0.0.0.0:8080/``` from the te
 <img src="/assets/img/nautobot_workshop/nautobot-homepage.webp" alt="">
 
 Navigate to the APPs - Installed Apps page to validate that the [Nornir](https://github.com/nautobot/nautobot-app-nornir), [BGP Models](https://github.com/nautobot/nautobot-app-bgp-models) and [Golden Config](https://github.com/nautobot/nautobot-app-golden-config) Apps from Network to Code have also been installed. To read about these apps head over to the Nautobot Github and check them out. These were included in the pyproject.toml in the root of the ```nautobot-docker-compose``` folder. If you ever want to install additional apps for Nautobot you can place them there and rebuild the image.
-
-```toml
-[tool.poetry]
-name = "nautobot-docker-compose"
-version = "0.1.1"
-description = ""
-authors = ["John Doe <johndoe@mail.com>"]
-
-[tool.poetry.dependencies]
-python = ">=3.9.2,<3.13"
-nautobot = "2.4.2"
-
-# nautobot-example-plugin = {path = "plugins/plugin_example", develop = true}
-nautobot-plugin-nornir = "^2.2.1"
-nautobot-bgp-models = "^2.3.0"
-nautobot-golden-config = "^2.4.0"
-
-
-[tool.poetry.dev-dependencies]
-invoke = "*"
-toml = "*"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
-```
 
 <img src="/assets/img/nautobot_workshop/nautobot-installed-app.webp" alt="">
 

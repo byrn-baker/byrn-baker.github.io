@@ -1,6 +1,6 @@
 ---
 title: Nautobot Workshop Blog Series - Overview
-date: 2025-06-05 9:00:00 -500
+date: 2025-05-24 15:00:00 -6
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
 image:

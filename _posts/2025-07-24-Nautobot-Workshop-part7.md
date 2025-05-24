@@ -1,6 +1,6 @@
 ---
 title: Nautobot Workshop Blog Series - Part 7 - Nautobot Ansible Dynamic Inventory
-date: 2025-07-24 9:00:00 -500
+date: 2025-07-24 9:00:00 -6
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
 image:
