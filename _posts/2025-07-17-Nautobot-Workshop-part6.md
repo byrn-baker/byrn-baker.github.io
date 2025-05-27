@@ -103,24 +103,36 @@ If you take a copy of one of the backup configs for a provider_router we can mak
 [provider_router.j2](https://github.com/byrn-baker/nautobot_workshop_golden_config_templates/blob/main/ios/platform_templates/provider_router.j2)
 
 ### Updating the container deployment
-> Before our Jinja templates will function correctly we need to make a change and add a file to our nautobot-docker-compose deployment. Under the nautobot-docker-compose folder create a new folder called ```custom_jinja_filters``` and place a file in this folder called ```config_templates.py```. 
+> Before our Jinja templates will function correctly we need to make a change and add a file to our nautobot-docker-compose deployment. Under the nautobot-docker-compose folder create a new folder called ```custom_jinja_filters``` and place a file in this folder called ```netaddr_filters.py```. 
 {: .prompt-tip }
 
-config_templates.py:
+netaddr_filters.py:
 ```python
 from netaddr import IPNetwork
 from django_jinja import library
 
-
 @library.filter
-def ipv4_address(value):
-    return str(IPNetwork(value).ip)
+def ipaddr(value, operation=None):
+    """Mimic Ansible's ipaddr filter."""
+    try:
+        ip = IPNetwork(value)
+    except Exception:
+        return value  # Fail gracefully if it's not CIDR
 
-
-@library.filter
-def netmask(value):
-    return str(IPNetwork(value).netmask)
-
+    if operation == "address":
+        return str(ip.ip)
+    elif operation == "netmask":
+        return str(ip.netmask)
+    elif operation == "prefix":
+        return str(ip.prefixlen)
+    elif operation == "network":
+        return str(ip.network)
+    elif operation == "broadcast":
+        return str(ip.broadcast)
+    elif operation == "hostmask":
+        return str(ip.hostmask)
+    else:
+        return str(ip)  # fallback
 ```
 You will need to update the nautobot_config.py to ensure this works with django_jinja
 ```python

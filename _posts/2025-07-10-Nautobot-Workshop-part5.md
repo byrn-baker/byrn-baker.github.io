@@ -54,6 +54,9 @@ query ($device_id: ID!) {
     hostname: name
     position
     serial
+    role {
+      name
+    }
     primary_ip4 {
       id
       primary_ip4_for {
@@ -72,6 +75,7 @@ query ($device_id: ID!) {
     }
     platform {
       name
+      network_driver
       manufacturer {
         name
       }
@@ -88,20 +92,15 @@ query ($device_id: ID!) {
       description
       mac_address
       enabled
+      mgmt_only
+      cf_ospf_network_type
+      cf_ospf_area
+      cf_mpls_enabled
       name
       ip_addresses {
         address
         tags {
           id
-        }
-      }
-      connected_circuit_termination {
-        circuit {
-          cid
-          commit_rate
-          provider {
-            name
-          }
         }
       }
       tagged_vlans {
@@ -110,12 +109,11 @@ query ($device_id: ID!) {
       untagged_vlan {
         id
       }
-      cable {
-        termination_a_type
-        status {
+      connected_interface {
+        name
+        device {
           name
         }
-        color
       }
       tags {
         id
