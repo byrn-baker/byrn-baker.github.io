@@ -12,7 +12,7 @@ image:
 
 ## Workshop Outline
 
-### Part 1: Environment Setup
+### Part 1: Environment Setup - Release date 6/5
 Goal: Build a repeatable automation lab foundation using Ubuntu, Containerlab, Nautobot, and vrnetlab.
 
 - Install and prepare Ubuntu 24.04 LTS
@@ -30,7 +30,7 @@ Goal: Build a repeatable automation lab foundation using Ubuntu, Containerlab, N
     - Spin up Nautobot stack
     - Verify IOL devices launch via containerlab
 
-### Part 2: Review the Network Topology
+### Part 2: Review the Network Topology - Release date 6/12
 Goal: Understand the multi-site MPLS lab you’ll be modeling in Nautobot.
 
 - Overview of uploaded diagrams:
@@ -41,7 +41,7 @@ Goal: Understand the multi-site MPLS lab you’ll be modeling in Nautobot.
 - Discuss ASN layout, IP schemes (v4/v6), and router roles (RR, PE, P, CE)
 - Management overlay discussion and how it ties into automation
 
-### Part 3: Adding Devices to Nautobot via Ansible
+### Part 3: Adding Devices to Nautobot via Ansible - Release date 6/19
 Goal: Automate network inventory onboarding.
 
 - Use networktocode.nautobot Ansible collections
@@ -50,14 +50,14 @@ Goal: Automate network inventory onboarding.
   - Create Sites, Devices, Interfaces, IP Addresses, Connections
 - Validate in Nautobot UI
 
-### Part 4: Building ContainerLab topology from the Nautobot Inventory
+### Part 4: Building ContainerLab topology from the Nautobot Inventory - Release date 6/26
 Goal: Create a virtual topology based on the Nautobot inventory that can be used for testing and validation.
 
 - Write GraphQL queries for device + interface inventory
 - Write a Jinja2 template to create the CLAB topology YAML
 - Write a Jinja2 template to create an initial configuration with MGMT reachability
 
-### Part 5 - Nautobot Golden Configuration - Configuration Backups
+### Part 5 - Nautobot Golden Configuration - Configuration Backups - Release date 7/03
 Goal: Enable automated configuration backups from network devices to a Git repository using the Nautobot Golden Configuration app.
 
   - Configure GitHub secret in Nautobot Secrets
@@ -72,7 +72,7 @@ Goal: Enable automated configuration backups from network devices to a Git repos
   - Execute Backup Configurations Job for EOS and IOS devices
   - Confirm backups stored in Git under backup-configs/
 
-### Part 6 - Nautobot Golden Configuration - Intended Configurations
+### Part 6 - Nautobot Golden Configuration - Intended Configurations - Release date 7/10
 Goal: Validate that device configurations match the intended state generated from Nautobot source-of-truth data.
 
   - Define what configuration compliance means in Nautobot
@@ -83,7 +83,7 @@ Goal: Validate that device configurations match the intended state generated fro
   - Generate and validate intended configurations
   - Run the compliance job and view compliance status in the Nautobot UI
 
-### Part 7 - Nautobot Ansible Dynamic Inventory
+### Part 7 - Nautobot Ansible Dynamic Inventory - Release date 7/017
 Goal: Use Nautobot as a dynamic inventory source in Ansible to generate and deploy real device configurations.
 
   - Configure Ansible to use Nautobot’s GraphQL API for dynamic inventory
@@ -93,7 +93,7 @@ Goal: Use Nautobot as a dynamic inventory source in Ansible to generate and depl
   - Push configurations to Cisco devices using cisco.ios.ios_config
   - Demonstrate how source-of-truth data drives real configuration deployment
 
-### Part 8 - Nautobot Config Context and Custom Fields
+### Part 8 - Nautobot Config Context and Custom Fields - - Release date 7/24
 Goal: Leverage Nautobot's Config Context and Custom Fields to drive dynamic, structured configuration generation from a Git-backed source of truth.
 
   - Define and store structured Config Context data in Git for centralized version control
