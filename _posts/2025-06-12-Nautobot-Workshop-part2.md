@@ -1,6 +1,6 @@
 ---
 title: Nautobot Workshop Blog Series - Part 2 Review the Network Topology
-date: 2025-06-19 9:00:00 --6
+date: 2025-06-12 9:00:00 --6
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
 image:
