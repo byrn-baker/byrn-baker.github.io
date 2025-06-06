@@ -11,7 +11,7 @@ image:
 "Nautobot Workshop" is a blog series that guides you through building a fully automated network lab using Nautobot, Containerlab, and Docker. Starting from environment setup on Ubuntu, each post will walk through deploying Nautobot with nautobot-docker-compose, modeling network topologies with Containerlab and vrnetlab-based routers, and populating Nautobot with real device data using Ansible. You'll also learn how to use Nautobot’s GraphQL API for dynamic inventory, generate device configurations with Jinja2 templates, and enforce configuration compliance using the Golden Config plugin. This series is ideal for network engineers looking to integrate source of truth, automation, and lab simulation into a streamlined workflow.
 
 ## Part 1: Setting Up the Nautobot Workshop Lab Environment
-[![Watch the video](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://youtu.be/-JkjzVuRB5c)
+[![Watch the video](https://img.youtube.com/vi/-JkjzVuRB5c/0.jpg)](https://youtu.be/-JkjzVuRB5c)
 
 ### System Requirements
 Ubuntu 24.04 (VM, or bare metal)
