@@ -349,194 +349,191 @@ topology:
 Recapping:
 - This Ansible playbook automates the process of generating a Containerlab topology and initial startup configurations for devices managed in Nautobot. The workflow begins with a GraphQL query to Nautobot, retrieving a rich dataset for all devices, including their names, models, platforms, software versions, IP addresses, and interface connections. This data is stored in the nb_devices variable and used in two subsequent templating tasks. The first template (initial_configs.j2) builds a startup configuration for each ceos device, setting up management VRFs, IP addressing, and routing. The second template (containerlab_topology.j2) dynamically constructs the entire Containerlab topology YAML by iterating over the devices and their connections. It uses device metadata to set the appropriate kind and image, applies startup configs to ceos nodes, and adds startup delays for specific image types. Additionally, the link definitions are intelligently deduplicated using a seen list to ensure that each point-to-point link is only rendered once. Together, these tasks allow the automation of network lab deployment using Nautobot as a source of truth.
 
-I am using a trunked port for my container lab deployment and so I can add additional vlans to my Ubuntu host operating system. I am going to use this method to create a new interface that uses vlan 220 for the mgmt of my virtual devices. In my netplan config I've added a new interface with the vlan id and no IP addressing. I've also added a bridge called clabbr220 included my new tagged interface. I can then reference the name of this bridge in my containerlab topology file and connect a virtualized nodes interface to it. We will assign our management addressing to these interfaces in our intitial configurations which the virtualized nodes will use on boot.
+I am using a secondary interface on my VM for my container lab deployment. This allows me to dedicate an additional network connection (eth1) on my Ubuntu host specifically for my lab’s management VLAN.
+
+In my netplan configuration, I’ve defined this second interface (eth1) with no IP addressing on the host. I’ve also created a bridge called clab-mgmt and added eth1 as its member interface. In my Containerlab topology file, I reference this bridge and connect the management interfaces of my virtual devices to it.
+
+The management IP addresses will be assigned within the initial configuration of each virtual node when they boot up, not on the Ubuntu host itself.
 
 ```yaml
 network:
-    
-    vlans:
-        bond0.220:
-            id: 220
-            link: bond0
-            dhcp4: false
-            dhcp6: false
-    bridges:
-      clab-mgmt:
-        interfaces: [bond0.220]
-        parameters:
-          stp: false
-          forward-delay: 0
-        dhcp4: no
+  version: 2
+  ethernets:
+    eth1:
+      match:
+        macaddress: bc:24:11:35:23:90
+      dhcp4: false
+      dhcp6: false
+ 
+  bridges:
+    clab-mgmt:
+      interfaces: [eth1]
+      parameters:
+        stp: false
+        forward-delay: 0
+```
+
+Once you have the secondary interface configured you will need a docker bridge network created as well
+
+```bash
+$ docker network create \
+  --driver=bridge \
+  --subnet=192.168.220.0/24 \
+  --gateway=192.168.220.1 \
+  --opt "com.docker.network.bridge.name"="clab-mgmt" \
+  clab-mgmt
 ```
 
 With the topology file built we can start the containerlab up
 
 ```bash
-(.venv) ubuntu@containerlabs:~/Nautobot-Workshop/clabs$ containerlab deploy -t containerlab-topology.yml --reconfigure
-04:17:03 INFO Containerlab started version=0.68.0
-04:17:03 INFO Parsing & checking topology file=containerlab-topology.yml
-04:17:03 INFO Destroying lab name=nautobot_workshop
-04:17:04 INFO Removed container name=clab-nautobot_workshop-P2
-04:17:04 INFO Removed container name=clab-nautobot_workshop-CE1
-04:17:05 INFO Removed container name=clab-nautobot_workshop-RR1
-04:17:05 INFO Removed container name=clab-nautobot_workshop-CE2
-04:17:05 INFO Removed container name=clab-nautobot_workshop-P1
-04:17:05 INFO Removed container name=clab-nautobot_workshop-P4
-04:17:05 INFO Removed container name=clab-nautobot_workshop-PE3
-04:17:05 INFO Removed container name=clab-nautobot_workshop-PE1
-04:17:05 INFO Removed container name=clab-nautobot_workshop-PE2
-04:17:05 INFO Removed container name=clab-nautobot_workshop-P3
-04:17:06 INFO Removed container name=clab-nautobot_workshop-West-Spine01
-04:17:06 INFO Removed container name=clab-nautobot_workshop-East-Spine01
-04:17:06 INFO Removed container name=clab-nautobot_workshop-East-Leaf01
-04:17:06 INFO Removed container name=clab-nautobot_workshop-East-Leaf02
-04:17:06 INFO Removed container name=clab-nautobot_workshop-West-Spine02
-04:17:06 INFO Removed container name=clab-nautobot_workshop-West-Leaf02
-04:17:06 INFO Removed container name=clab-nautobot_workshop-East-Spine02
-04:17:06 INFO Removed container name=clab-nautobot_workshop-West-Leaf01
-04:17:06 INFO Removing host entries path=/etc/hosts
-04:17:06 INFO Removing SSH config path=/etc/ssh/ssh_config.d/clab-nautobot_workshop.conf
-04:17:06 INFO Removing directory path=/home/ubuntu/Nautobot-Workshop/clabs/clab-nautobot_workshop
-04:17:06 INFO Creating lab directory path=/home/ubuntu/Nautobot-Workshop/clabs/clab-nautobot_workshop
-04:17:07 INFO Creating container name=East-Spine02
-04:17:07 INFO Creating container name=West-Leaf01
-04:17:07 INFO Creating container name=East-Leaf02
-04:17:07 INFO Creating container name=P4
-04:17:07 INFO Creating container name=PE2
-04:17:07 INFO Creating container name=RR1
-04:17:07 INFO Creating container name=P1
-04:17:07 INFO Creating container name=P2
-04:17:07 INFO Creating container name=East-Spine01
-04:17:07 INFO Creating container name=PE1
-04:17:07 INFO Creating container name=CE2
-04:17:07 INFO Creating container name=West-Spine01
-04:17:07 INFO Creating container name=West-Leaf02
-04:17:07 INFO Creating container name=West-Spine02
-04:17:07 INFO Creating container name=P3
-04:17:07 INFO Creating container name=CE1
-04:17:07 INFO Creating container name=East-Leaf01
-04:17:07 INFO Creating container name=PE3
-04:17:08 INFO Created link: clabbr220:eth12 ▪┄┄▪ East-Spine02:eth8
-04:17:08 INFO Running postdeploy actions for Arista cEOS 'East-Spine02' node
-04:17:09 INFO Created link: clabbr220:eth5 ▪┄┄▪ PE2:eth4 (Ethernet1/0)
-04:17:09 INFO Running postdeploy actions for Cisco IOL 'PE2' node
-04:17:09 INFO Created link: clabbr220:eth13 ▪┄┄▪ West-Leaf01:eth8
-04:17:09 INFO Running postdeploy actions for Arista cEOS 'West-Leaf01' node
-04:17:09 INFO Created link: West-Leaf01:eth2 ▪┄┄▪ West-Spine02:eth1
-04:17:09 INFO Created link: CE1:eth2 (Ethernet0/2) ▪┄┄▪ West-Leaf01:eth7
-04:17:09 INFO Created link: clabbr220:eth7 ▪┄┄▪ RR1:eth4 (Ethernet1/0)
-04:17:09 INFO Running postdeploy actions for Cisco IOL 'RR1' node
-04:17:09 INFO Created link: clabbr220:eth16 ▪┄┄▪ West-Spine02:eth8
-04:17:09 INFO Running postdeploy actions for Arista cEOS 'West-Spine02' node
-04:17:09 INFO Created link: CE1:eth3 (Ethernet0/3) ▪┄┄▪ West-Spine02:eth7
-04:17:10 INFO Created link: P1:eth4 (Ethernet1/0) ▪┄┄▪ RR1:eth1 (Ethernet0/1)
-04:17:10 INFO Created link: CE1:eth4 (Ethernet1/0) ▪┄┄▪ clabbr220:eth8
-04:17:10 INFO Running postdeploy actions for Cisco IOL 'CE1' node
-04:17:10 INFO Created link: P1:eth1 (Ethernet0/1) ▪┄┄▪ P2:eth1 (Ethernet0/1)
-04:17:10 INFO Created link: clabbr220:eth6 ▪┄┄▪ PE3:eth4 (Ethernet1/0)
-04:17:10 INFO Running postdeploy actions for Cisco IOL 'PE3' node
-04:17:10 INFO Created link: CE2:eth1 (Ethernet0/1) ▪┄┄▪ PE2:eth3 (Ethernet0/3)
-04:17:10 INFO Created link: clabbr220:eth0 ▪┄┄▪ P1:eth6 (Ethernet1/2)
-04:17:10 INFO Running postdeploy actions for Cisco IOL 'P1' node
-04:17:10 INFO Created link: P2:eth3 (Ethernet0/3) ▪┄┄▪ RR1:eth2 (Ethernet0/2)
-04:17:10 INFO Created link: P2:eth4 (Ethernet1/0) ▪┄┄▪ PE3:eth1 (Ethernet0/1)
-04:17:10 INFO Created link: P2:eth2 (Ethernet0/2) ▪┄┄▪ P4:eth2 (Ethernet0/2)
-04:17:11 INFO Created link: clabbr220:eth1 ▪┄┄▪ P2:eth5 (Ethernet1/1)
-04:17:11 INFO Running postdeploy actions for Cisco IOL 'P2' node
-04:17:11 INFO Created link: CE2:eth3 (Ethernet0/3) ▪┄┄▪ East-Spine02:eth7
-04:17:11 INFO Created link: East-Leaf01:eth2 ▪┄┄▪ East-Spine02:eth1
-04:17:11 INFO Created link: P4:eth3 (Ethernet0/3) ▪┄┄▪ PE2:eth2 (Ethernet0/2)
-04:17:11 INFO Created link: clabbr220:eth10 ▪┄┄▪ East-Leaf01:eth8
-04:17:11 INFO Running postdeploy actions for Arista cEOS 'East-Leaf01' node
-04:17:11 INFO Created link: CE2:eth4 (Ethernet1/0) ▪┄┄▪ clabbr220:eth9
-04:17:11 INFO Running postdeploy actions for Cisco IOL 'CE2' node
-04:17:11 INFO Created link: P4:eth4 (Ethernet1/0) ▪┄┄▪ PE3:eth2 (Ethernet0/2)
-04:17:11 INFO Created link: clabbr220:eth3 ▪┄┄▪ P4:eth5 (Ethernet1/1)
-04:17:11 INFO Running postdeploy actions for Cisco IOL 'P4' node
-04:17:11 INFO Created link: East-Leaf02:eth2 ▪┄┄▪ East-Spine02:eth2
-04:17:11 INFO Created link: clabbr220:eth11 ▪┄┄▪ East-Leaf02:eth8
-04:17:11 INFO Running postdeploy actions for Arista cEOS 'East-Leaf02' node
-04:17:11 INFO Created link: CE2:eth2 (Ethernet0/2) ▪┄┄▪ East-Spine01:eth7
-04:17:11 INFO Created link: East-Leaf01:eth1 ▪┄┄▪ East-Spine01:eth1
-04:17:11 INFO Created link: West-Leaf01:eth1 ▪┄┄▪ West-Spine01:eth1
-04:17:12 INFO Created link: West-Leaf02:eth2 ▪┄┄▪ West-Spine02:eth2
-04:17:12 INFO Created link: West-Leaf02:eth1 ▪┄┄▪ West-Spine01:eth2
-04:17:12 INFO Created link: East-Leaf02:eth1 ▪┄┄▪ East-Spine01:eth2
-04:17:12 INFO Created link: clabbr220:eth15 ▪┄┄▪ West-Spine01:eth8
-04:17:12 INFO Running postdeploy actions for Arista cEOS 'West-Spine01' node
-04:17:12 INFO Created link: clabbr220:eth14 ▪┄┄▪ West-Leaf02:eth8
-04:17:12 INFO Running postdeploy actions for Arista cEOS 'West-Leaf02' node
-04:17:12 INFO Created link: clabbr220:eth17 ▪┄┄▪ East-Spine01:eth8
-04:17:12 INFO Running postdeploy actions for Arista cEOS 'East-Spine01' node
-04:17:12 INFO Created link: CE1:eth1 (Ethernet0/1) ▪┄┄▪ PE1:eth3 (Ethernet0/3)
-04:17:12 INFO Created link: P1:eth5 (Ethernet1/1) ▪┄┄▪ PE1:eth1 (Ethernet0/1)
-04:17:12 INFO Created link: P1:eth2 (Ethernet0/2) ▪┄┄▪ P3:eth2 (Ethernet0/2)
-04:17:12 INFO Created link: clabbr220:eth4 ▪┄┄▪ PE1:eth4 (Ethernet1/0)
-04:17:12 INFO Running postdeploy actions for Cisco IOL 'PE1' node
-04:17:12 INFO Created link: P3:eth1 (Ethernet0/1) ▪┄┄▪ P4:eth1 (Ethernet0/1)
-04:17:12 INFO Created link: P3:eth3 (Ethernet0/3) ▪┄┄▪ PE1:eth2 (Ethernet0/2)
-04:17:12 INFO Created link: P3:eth4 (Ethernet1/0) ▪┄┄▪ PE2:eth1 (Ethernet0/1)
-04:17:12 INFO Created link: clabbr220:eth2 ▪┄┄▪ P3:eth5 (Ethernet1/1)
-04:17:12 INFO Running postdeploy actions for Cisco IOL 'P3' node
-04:17:56 INFO Adding host entries path=/etc/hosts
-04:17:56 INFO Adding SSH config for nodes path=/etc/ssh/ssh_config.d/clab-nautobot_workshop.conf
-╭─────────────────────────────────────┬─────────────────────────────┬─────────┬────────────────────╮
-│                 Name                │          Kind/Image         │  State  │   IPv4/6 Address   │
-├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────────┤
-│ clab-nautobot_workshop-CE1          │ cisco_iol                   │ running │ 172.20.20.7        │
-│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ 3fff:172:20:20::7  │
-├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────────┤
-│ clab-nautobot_workshop-CE2          │ cisco_iol                   │ running │ 172.20.20.11       │
-│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ 3fff:172:20:20::b  │
-├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────────┤
-│ clab-nautobot_workshop-East-Leaf01  │ ceos                        │ running │ 172.20.20.13       │
-│                                     │ ceos:4.34.0F                │         │ 3fff:172:20:20::d  │
-├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────────┤
-│ clab-nautobot_workshop-East-Leaf02  │ ceos                        │ running │ 172.20.20.14       │
-│                                     │ ceos:4.34.0F                │         │ 3fff:172:20:20::e  │
-├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────────┤
-│ clab-nautobot_workshop-East-Spine01 │ ceos                        │ running │ 172.20.20.15       │
-│                                     │ ceos:4.34.0F                │         │ 3fff:172:20:20::f  │
-├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────────┤
-│ clab-nautobot_workshop-East-Spine02 │ ceos                        │ running │ 172.20.20.3        │
-│                                     │ ceos:4.34.0F                │         │ 3fff:172:20:20::3  │
-├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────────┤
-│ clab-nautobot_workshop-P1           │ cisco_iol                   │ running │ 172.20.20.8        │
-│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ 3fff:172:20:20::8  │
-├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────────┤
-│ clab-nautobot_workshop-P2           │ cisco_iol                   │ running │ 172.20.20.10       │
-│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ 3fff:172:20:20::a  │
-├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────────┤
-│ clab-nautobot_workshop-P3           │ cisco_iol                   │ running │ 172.20.20.19       │
-│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ 3fff:172:20:20::13 │
-├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────────┤
-│ clab-nautobot_workshop-P4           │ cisco_iol                   │ running │ 172.20.20.12       │
-│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ 3fff:172:20:20::c  │
-├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────────┤
-│ clab-nautobot_workshop-PE1          │ cisco_iol                   │ running │ 172.20.20.18       │
-│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ 3fff:172:20:20::12 │
-├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────────┤
-│ clab-nautobot_workshop-PE2          │ cisco_iol                   │ running │ 172.20.20.2        │
-│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ 3fff:172:20:20::2  │
-├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────────┤
-│ clab-nautobot_workshop-PE3          │ cisco_iol                   │ running │ 172.20.20.9        │
-│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ 3fff:172:20:20::9  │
-├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────────┤
-│ clab-nautobot_workshop-RR1          │ cisco_iol                   │ running │ 172.20.20.6        │
-│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ 3fff:172:20:20::6  │
-├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────────┤
-│ clab-nautobot_workshop-West-Leaf01  │ ceos                        │ running │ 172.20.20.4        │
-│                                     │ ceos:4.34.0F                │         │ 3fff:172:20:20::4  │
-├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────────┤
-│ clab-nautobot_workshop-West-Leaf02  │ ceos                        │ running │ 172.20.20.17       │
-│                                     │ ceos:4.34.0F                │         │ 3fff:172:20:20::11 │
-├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────────┤
-│ clab-nautobot_workshop-West-Spine01 │ ceos                        │ running │ 172.20.20.16       │
-│                                     │ ceos:4.34.0F                │         │ 3fff:172:20:20::10 │
-├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────────┤
-│ clab-nautobot_workshop-West-Spine02 │ ceos                        │ running │ 172.20.20.5        │
-│                                     │ ceos:4.34.0F                │         │ 3fff:172:20:20::5  │
-╰─────────────────────────────────────┴─────────────────────────────┴─────────┴────────────────────╯
+ubuntu@containerlabs:~/labs$ containerlab deploy
+04:26:46 INFO Containerlab started version=0.68.0
+04:26:46 INFO Parsing & checking topology file=nautobot-workshop-topology.clab.yml
+04:26:46 INFO Destroying lab name=nautobot_workshop
+04:26:47 INFO Removed container name=clab-nautobot_workshop-CE1
+04:26:47 INFO Removed container name=clab-nautobot_workshop-East-Spine02
+04:26:47 INFO Removed container name=clab-nautobot_workshop-East-Leaf01
+04:26:47 INFO Removed container name=clab-nautobot_workshop-RR1
+04:26:47 INFO Removed container name=clab-nautobot_workshop-P2
+04:26:47 INFO Removed container name=clab-nautobot_workshop-CE2
+04:26:47 INFO Removed container name=clab-nautobot_workshop-P1
+04:26:48 INFO Removed container name=clab-nautobot_workshop-West-Leaf01
+04:26:48 INFO Removed container name=clab-nautobot_workshop-East-Spine01
+04:26:48 INFO Removed container name=clab-nautobot_workshop-P4
+04:26:48 INFO Removed container name=clab-nautobot_workshop-PE2
+04:26:48 INFO Removed container name=clab-nautobot_workshop-West-Leaf02
+04:26:48 INFO Removed container name=clab-nautobot_workshop-PE1
+04:26:48 INFO Removed container name=clab-nautobot_workshop-West-Spine01
+04:26:48 INFO Removed container name=clab-nautobot_workshop-P3
+04:26:48 INFO Removed container name=clab-nautobot_workshop-West-Spine02
+04:26:48 INFO Removed container name=clab-nautobot_workshop-PE3
+04:26:48 INFO Removed container name=clab-nautobot_workshop-East-Leaf02
+04:26:48 INFO Removing host entries path=/etc/hosts
+04:26:48 INFO Removing SSH config path=/etc/ssh/ssh_config.d/clab-nautobot_workshop.conf
+04:26:48 INFO Removing directory path=/home/ubuntu/labs/clab-nautobot_workshop
+04:26:48 INFO Creating lab directory path=/home/ubuntu/labs/clab-nautobot_workshop
+04:26:49 INFO Creating container name=West-Spine02
+04:26:49 INFO Creating container name=PE2
+04:26:49 INFO Creating container name=East-Leaf02
+04:26:49 INFO Creating container name=PE3
+04:26:49 INFO Creating container name=P2
+04:26:49 INFO Creating container name=RR1
+04:26:49 INFO Creating container name=East-Spine01
+04:26:49 INFO Creating container name=P3
+04:26:49 INFO Creating container name=West-Spine01
+04:26:49 INFO Creating container name=East-Leaf01
+04:26:49 INFO Creating container name=West-Leaf01
+04:26:49 INFO Creating container name=West-Leaf02
+04:26:49 INFO Creating container name=CE2
+04:26:49 INFO Creating container name=CE1
+04:26:49 INFO Creating container name=P1
+04:26:49 INFO Creating container name=PE1
+04:26:49 INFO Creating container name=P4
+04:26:49 INFO Creating container name=East-Spine02
+04:26:50 INFO Running postdeploy actions for Cisco IOL 'PE2' node
+04:26:50 INFO Running postdeploy actions for Cisco IOL 'CE1' node
+04:26:50 INFO Created link: CE1:eth2 (Ethernet0/2) ▪┄┄▪ West-Spine01:eth7
+04:26:50 INFO Running postdeploy actions for Arista cEOS 'East-Leaf02' node
+04:26:51 INFO Running postdeploy actions for Arista cEOS 'West-Spine01' node
+04:26:51 INFO Running postdeploy actions for Arista cEOS 'East-Leaf01' node
+04:26:51 INFO Created link: West-Leaf01:eth1 ▪┄┄▪ West-Spine01:eth1
+04:26:51 INFO Created link: P2:eth3 (Ethernet0/3) ▪┄┄▪ RR1:eth2 (Ethernet0/2)
+04:26:51 INFO Running postdeploy actions for Cisco IOL 'RR1' node
+04:26:51 INFO Running postdeploy actions for Cisco IOL 'P2' node
+04:26:51 INFO Running postdeploy actions for Arista cEOS 'West-Leaf01' node
+04:26:51 INFO Created link: P2:eth2 (Ethernet0/2) ▪┄┄▪ P4:eth2 (Ethernet0/2)
+04:26:51 INFO Created link: P1:eth1 (Ethernet0/1) ▪┄┄▪ P2:eth1 (Ethernet0/1)
+04:26:51 INFO Created link: East-Leaf01:eth2 ▪┄┄▪ East-Spine02:eth1
+04:26:51 INFO Created link: P3:eth1 (Ethernet0/1) ▪┄┄▪ P4:eth1 (Ethernet0/1)
+04:26:51 INFO Created link: P3:eth4 (Ethernet1/0) ▪┄┄▪ PE2:eth1 (Ethernet0/1)
+04:26:51 INFO Running postdeploy actions for Cisco IOL 'P3' node
+04:26:51 INFO Created link: P1:eth2 (Ethernet0/2) ▪┄┄▪ P3:eth2 (Ethernet0/2)
+04:26:51 INFO Created link: West-Leaf02:eth1 ▪┄┄▪ West-Spine01:eth2
+04:26:51 INFO Created link: East-Leaf02:eth2 ▪┄┄▪ East-Spine02:eth2
+04:26:51 INFO Running postdeploy actions for Arista cEOS 'East-Spine02' node
+04:26:51 INFO Created link: CE2:eth3 (Ethernet0/3) ▪┄┄▪ East-Spine02:eth7
+04:26:51 INFO Running postdeploy actions for Cisco IOL 'CE2' node
+04:26:51 INFO Created link: P4:eth3 (Ethernet0/3) ▪┄┄▪ PE2:eth2 (Ethernet0/2)
+04:26:51 INFO Created link: P1:eth3 (Ethernet0/3) ▪┄┄▪ RR1:eth1 (Ethernet0/1)
+04:26:51 INFO Running postdeploy actions for Arista cEOS 'West-Leaf02' node
+04:26:51 INFO Created link: CE1:eth1 (Ethernet0/1) ▪┄┄▪ PE1:eth3 (Ethernet0/3)
+04:26:51 INFO Running postdeploy actions for Cisco IOL 'P4' node
+04:26:51 INFO Running postdeploy actions for Cisco IOL 'P1' node
+04:26:51 INFO Created link: P1:eth4 (Ethernet1/0) ▪┄┄▪ PE1:eth1 (Ethernet0/1)
+04:26:51 INFO Created link: P3:eth3 (Ethernet0/3) ▪┄┄▪ PE1:eth2 (Ethernet0/2)
+04:26:51 INFO Running postdeploy actions for Cisco IOL 'PE1' node
+04:26:52 INFO Created link: CE2:eth2 (Ethernet0/2) ▪┄┄▪ East-Spine01:eth7
+04:26:52 INFO Created link: East-Leaf01:eth1 ▪┄┄▪ East-Spine01:eth1
+04:26:52 INFO Created link: East-Leaf02:eth1 ▪┄┄▪ East-Spine01:eth2
+04:26:52 INFO Running postdeploy actions for Arista cEOS 'East-Spine01' node
+04:26:52 INFO Created link: CE2:eth1 (Ethernet0/1) ▪┄┄▪ PE3:eth3 (Ethernet0/3)
+04:26:52 INFO Created link: P2:eth4 (Ethernet1/0) ▪┄┄▪ PE3:eth1 (Ethernet0/1)
+04:26:52 INFO Created link: P4:eth4 (Ethernet1/0) ▪┄┄▪ PE3:eth2 (Ethernet0/2)
+04:26:52 INFO Running postdeploy actions for Cisco IOL 'PE3' node
+04:26:52 INFO Created link: CE1:eth3 (Ethernet0/3) ▪┄┄▪ West-Spine02:eth7
+04:26:52 INFO Created link: West-Leaf01:eth2 ▪┄┄▪ West-Spine02:eth1
+04:26:52 INFO Created link: West-Leaf02:eth2 ▪┄┄▪ West-Spine02:eth2
+04:26:52 INFO Running postdeploy actions for Arista cEOS 'West-Spine02' node
+04:28:21 INFO Adding host entries path=/etc/hosts
+04:28:22 INFO Adding SSH config for nodes path=/etc/ssh/ssh_config.d/clab-nautobot_workshop.conf
+╭─────────────────────────────────────┬─────────────────────────────┬─────────┬────────────────╮
+│                 Name                │          Kind/Image         │  State  │ IPv4/6 Address │
+├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────┤
+│ clab-nautobot_workshop-CE1          │ cisco_iol                   │ running │ 192.168.220.9  │
+│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ N/A            │
+├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────┤
+│ clab-nautobot_workshop-CE2          │ cisco_iol                   │ running │ 192.168.220.10 │
+│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ N/A            │
+├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────┤
+│ clab-nautobot_workshop-East-Leaf01  │ ceos                        │ running │ 192.168.220.18 │
+│                                     │ ceos:4.34.0F                │         │ N/A            │
+├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────┤
+│ clab-nautobot_workshop-East-Leaf02  │ ceos                        │ running │ 192.168.220.19 │
+│                                     │ ceos:4.34.0F                │         │ N/A            │
+├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────┤
+│ clab-nautobot_workshop-East-Spine01 │ ceos                        │ running │ 192.168.220.16 │
+│                                     │ ceos:4.34.0F                │         │ N/A            │
+├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────┤
+│ clab-nautobot_workshop-East-Spine02 │ ceos                        │ running │ 192.168.220.17 │
+│                                     │ ceos:4.34.0F                │         │ N/A            │
+├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────┤
+│ clab-nautobot_workshop-P1           │ cisco_iol                   │ running │ 192.168.220.2  │
+│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ N/A            │
+├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────┤
+│ clab-nautobot_workshop-P2           │ cisco_iol                   │ running │ 192.168.220.3  │
+│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ N/A            │
+├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────┤
+│ clab-nautobot_workshop-P3           │ cisco_iol                   │ running │ 192.168.220.4  │
+│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ N/A            │
+├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────┤
+│ clab-nautobot_workshop-P4           │ cisco_iol                   │ running │ 192.168.220.5  │
+│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ N/A            │
+├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────┤
+│ clab-nautobot_workshop-PE1          │ cisco_iol                   │ running │ 192.168.220.6  │
+│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ N/A            │
+├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────┤
+│ clab-nautobot_workshop-PE2          │ cisco_iol                   │ running │ 192.168.220.7  │
+│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ N/A            │
+├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────┤
+│ clab-nautobot_workshop-PE3          │ cisco_iol                   │ running │ 192.168.220.8  │
+│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ N/A            │
+├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────┤
+│ clab-nautobot_workshop-RR1          │ cisco_iol                   │ running │ 192.168.220.11 │
+│                                     │ vrnetlab/cisco_iol:17.12.01 │         │ N/A            │
+├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────┤
+│ clab-nautobot_workshop-West-Leaf01  │ ceos                        │ running │ 192.168.220.14 │
+│                                     │ ceos:4.34.0F                │         │ N/A            │
+├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────┤
+│ clab-nautobot_workshop-West-Leaf02  │ ceos                        │ running │ 192.168.220.15 │
+│                                     │ ceos:4.34.0F                │         │ N/A            │
+├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────┤
+│ clab-nautobot_workshop-West-Spine01 │ ceos                        │ running │ 192.168.220.12 │
+│                                     │ ceos:4.34.0F                │         │ N/A            │
+├─────────────────────────────────────┼─────────────────────────────┼─────────┼────────────────┤
+│ clab-nautobot_workshop-West-Spine02 │ ceos                        │ running │ 192.168.220.13 │
+│                                     │ ceos:4.34.0F                │         │ N/A            │
+╰─────────────────────────────────────┴─────────────────────────────┴─────────┴────────────────╯
 ```
 
 You should now be able to ping the MGMT interfaces on all of you virtual routers. We used 192.168.220.x and you should be able to ping any of the assigned IPs of you virtual routers.
