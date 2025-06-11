@@ -13,7 +13,7 @@ image:
 
 ## Part 3: Adding Devices to Nautobot via Ansible
 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-  <iframe src="https://www.youtube.com/embed/GUVQ7PHB9Kw" 
+  <iframe src="https://www.youtube.com/embed/2iLY_Fju704" 
           frameborder="0" 
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
           allowfullscreen 
@@ -21,7 +21,7 @@ image:
   </iframe>
 </div>
 
-[▶️ Watch the video](https://youtu.be/GUVQ7PHB9Kw)
+[▶️ Watch the video](https://youtu.be/2iLY_Fju704)
 
 Overview:
 <img src="/assets/img/nautobot_workshop/Nautobot Workshop-Overview.webp" alt="">
@@ -63,9 +63,7 @@ Install the Nautobot Ansible collection:
 ansible-galaxy collection install networktocode.nautobot
 ```
 
-> Having the Nautobot Ansible collection in your project folder helps with portability. When you need to look at an example for a module, they exist in:
-> `ansible-lab/ansible_collections/networktocode/nautobot/plugins/modules`
-{: .prompt-tip }
+> Having the Nautobot Ansible collection in your project folder helps with portability. When you need to look at an example for a module, they exist in: `ansible-lab/ansible_collections/networktocode/nautobot/plugins/modules` {: .prompt-tip }
 
 Start your Nautobot Docker instance from a separate terminal if it's not running:
 
@@ -74,12 +72,11 @@ cd nautobot-docker-compose
 invoke debug
 ```
 
-> Using a Python virtual environment isolates your project’s dependencies, ensuring compatibility and reproducibility across systems.
-{: .prompt-tip }
+> Using a Python virtual environment isolates your project’s dependencies, ensuring compatibility and reproducibility across systems. {: .prompt-tip }
 
 ---
 
-### 🧾 Creating Ansible Playbook and Tasks
+### 📜 Creating Ansible Playbook and Tasks
 
 Create your base inventory and playbook files:
 
@@ -95,8 +92,7 @@ nb_url: "<your-url-here>"
 nb_token: "<your-token-here>"
 ```
 
-> To create an API key in Nautobot, navigate to the admin panel and click your profile. You'll find a link for "API Tokens" where you can generate a token.
-{: .prompt-tip }
+> To create an API key in Nautobot, navigate to the admin panel and click your profile. You'll find a link for "API Tokens" where you can generate a token. {: .prompt-tip }
 
 Now create the role folder and task structure:
 
@@ -119,6 +115,31 @@ Expected structure:
             └── main.yml
 ```
 
+In your `main.yml`, include all task files:
+
+```yaml
+---
+- name: Build Nautobot Extensibility
+  import_tasks: extensibility.yml
+  tags: [extensibility]
+
+- name: Build Nautobot organizational data
+  import_tasks: organizational.yml
+  tags: [organization]
+
+- name: Build Nautobot IPAM data
+  import_tasks: ipam.yml
+  tags: [ipam]
+
+- name: Build Nautobot device data
+  import_tasks: devices.yml
+  tags: [devices]
+
+- name: Build Nautobot BGP routing instances
+  import_tasks: bgp.yml
+  tags: [bgp]
+```
+
 ---
 
 ### 📂 Creating the Nautobot Data Files
@@ -133,20 +154,21 @@ In your root project directory, create the following data files:
 These files will contain everything needed to populate Nautobot and build the topology.
 
 | Section                                      | Nautobot Functionality Unlocked                               |
-|---------------------------------------------|---------------------------------------------------------------|
-| `location_types`, `locations`               | Physical/logical hierarchy, mapping, grouping                 |
-| `roles`                                     | Automation, compliance, filtering by function                 |
-| `manufacturers`, `device_types`, `platforms`| Inventory modeling, config templating, plugin filtering       |
-| `software_versions`                         | OS version tracking, Nornir group matching                    |
-| `prefixes`, `ip_addresses`                  | IPAM, interface mapping, VRF/subnet usage                     |
-| `devices`, `interfaces`                     | Topology, inventory, config generation, connection validation |
+| -------------------------------------------- | ------------------------------------------------------------- |
+| `location_types`, `locations`                | Physical/logical hierarchy, mapping, grouping                 |
+| `roles`                                      | Automation, compliance, filtering by function                 |
+| `manufacturers`, `device_types`, `platforms` | Inventory modeling, config templating, plugin filtering       |
+| `software_versions`                          | OS version tracking, Nornir group matching                    |
+| `prefixes`, `ip_addresses`                   | IPAM, interface mapping, VRF/subnet usage                     |
+| `devices`, `interfaces`                      | Topology, inventory, config generation, connection validation |
+| `routing_instances`, `bgp_peers`             | BGP configuration and peering logic                           |
 
 View these sample files on GitHub:
 
-- [extensible_data.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/nautobot-data/extensible_data.yml)
-- [organization_data.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/nautobot-data/origanization_data.yml)
-- [ipam_data.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/nautobot-data/ipam_data.yml)
-- [nautobot_devices.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/nautobot-data/nautobot_devices.yml)
+- [extensible\_data.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/nautobot-data/extensible_data.yml)
+- [organization\_data.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/nautobot-data/origanization_data.yml)
+- [ipam\_data.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/nautobot-data/ipam_data.yml)
+- [nautobot\_devices.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/nautobot-data/nautobot_devices.yml)
 
 ---
 
@@ -160,78 +182,60 @@ This top-level playbook includes tasks in logical order:
 2. `organizational.yml`: Build hierarchy with locations and roles
 3. `ipam.yml`: Configure IP space, prefixes, addresses
 4. `devices.yml`: Define devices, assign platforms, IPs, and interfaces
+5. `bgp.yml`: Create BGP autonomous systems, routing instances, AFI/SAFI, and peerings
 
 ---
 
 ### 📦 `extensibility.yml` – Custom Fields & Metadata
 
-**Create Custom Fields**
-- Module: `networktocode.nautobot.custom_field`
-
-**Create Choices for Custom Fields**
-- Module: `networktocode.nautobot.custom_field_choice`
+- **Module:** `networktocode.nautobot.custom_field`
+- **Module:** `networktocode.nautobot.custom_field_choice`
 
 ---
 
 ### 🏢 `organizational.yml` – Location and Role Modeling
 
-**Create Location Types**
-- Module: `networktocode.nautobot.location_type`
-
-**Create Locations**
-- Module: `networktocode.nautobot.location`
-
-**Create Roles**
-- Module: `networktocode.nautobot.role`
+- **Location Types:** `networktocode.nautobot.location_type`
+- **Locations:** `networktocode.nautobot.location`
+- **Roles:** `networktocode.nautobot.role`
 
 ---
 
 ### 🌐 `ipam.yml` – IP Address Management
 
-**Create Namespaces**
-- Module: `networktocode.nautobot.namespace`
-
-**Create VRFs**
-- Module: `networktocode.nautobot.vrf`
-
-**Create Prefixes**
-- Module: `networktocode.nautobot.prefix`
-
-**Create IP Addresses**
-- Module: `networktocode.nautobot.ip_address`
-
-**Tag Loopbacks**
-- Logic: Tag `/32` or `/128` IPs with `loopback` role
+- **Namespaces:** `networktocode.nautobot.namespace`
+- **VRFs:** `networktocode.nautobot.vrf`
+- **Prefixes:** `networktocode.nautobot.prefix`
+- **IP Addresses:** `networktocode.nautobot.ip_address`
+- **Loopback Tagging:** Conditional tag `/32` or `/128` with `Loopback`
 
 ---
 
-### 🖥️ `devices.yml` – Device & Network Provisioning
+### 💻 `devices.yml` – Device & Network Provisioning
 
-**Create Manufacturers**
-- Module: `networktocode.nautobot.manufacturer`
-
-**Create Device Types**
-- Module: `networktocode.nautobot.device_type`
-
-**Create Platforms**
-- Module: `networktocode.nautobot.platform`
-
-**Create Software Versions**
-- Module: `networktocode.nautobot.software_version`
-
-**Create Devices**
-- Module: `networktocode.nautobot.device`
-
-**Assign Software to Devices**
-- Logic: Use `uri` module with PATCH to assign software versions
-
-**Create Interfaces**
-- Module: `networktocode.nautobot.device_interface`
-
-**Assign IPs to Interfaces**
-- Module: `networktocode.nautobot.ip_address_to_interface`
+- **Manufacturers:** `networktocode.nautobot.manufacturer`
+- **Device Types:** `networktocode.nautobot.device_type`
+- **Platforms:** `networktocode.nautobot.platform`
+- **Software Versions:** `networktocode.nautobot.software_version`
+- **Devices:** `networktocode.nautobot.device`
+- **Assign Software Versions:** PATCH via `uri`
+- **Interfaces:** `networktocode.nautobot.device_interface`
+- **IP Assignment:** `networktocode.nautobot.ip_address_to_interface`
+- **Primary IPs:** `networktocode.nautobot.device`
+- **Cabling:** `networktocode.nautobot.cable`
+- **Interface Custom Fields:** OSPF, MPLS via `custom_fields`
 
 ---
+
+### 🌍 `bgp.yml` – BGP Configuration
+
+- **Autonomous Systems:** `networktocode.nautobot.plugin (bgp.autonomous-systems)`
+- **Routing Instances:** `networktocode.nautobot.plugin (bgp.routing-instances)`
+- **Address Families:** `networktocode.nautobot.plugin (bgp.address-families)`
+- **BGP Peers & Endpoints:** dynamic logic using GraphQL, facts, and `uri` for:
+  - Peerings
+  - PeerEndpoints
+  - PeerEndpoint AFI/SAFI
 
 Stay tuned for Part 4 where we'll use this data to dynamically generate configuration templates and validate configuration compliance with Golden Config!
 
