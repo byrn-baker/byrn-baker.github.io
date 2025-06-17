@@ -186,7 +186,7 @@ View these sample files on GitHub:
 
 ## 🛠️ Managing Nautobot with Ansible
 
-### 🔗 `main.yml` (Playbook Structure)
+### 🔗 [main.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/roles/load_nautobot/tasks/main.yml) (Playbook Structure)
 
 This top-level playbook includes tasks in logical order:
 
@@ -198,14 +198,14 @@ This top-level playbook includes tasks in logical order:
 
 ---
 
-### 📦 `extensibility.yml` – Custom Fields & Metadata
+### 📦 [extensibility.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/roles/load_nautobot/tasks/extensibility.yml) – Custom Fields & Metadata
 
 - **Module:** `networktocode.nautobot.custom_field`
 - **Module:** `networktocode.nautobot.custom_field_choice`
 
 ---
 
-### 🏢 `organizational.yml` – Location and Role Modeling
+### 🏢 [organizational.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/roles/load_nautobot/tasks/organizational.yml) – Location and Role Modeling
 
 - **Location Types:** `networktocode.nautobot.location_type`
 - **Locations:** `networktocode.nautobot.location`
@@ -213,7 +213,7 @@ This top-level playbook includes tasks in logical order:
 
 ---
 
-### 🌐 `ipam.yml` – IP Address Management
+### 🌐 [ipam.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/roles/load_nautobot/tasks/ipam.yml) – IP Address Management
 
 - **Namespaces:** `networktocode.nautobot.namespace`
 - **VRFs:** `networktocode.nautobot.vrf`
@@ -223,7 +223,7 @@ This top-level playbook includes tasks in logical order:
 
 ---
 
-### 💻 `devices.yml` – Device & Network Provisioning
+### 💻 [devices.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/roles/load_nautobot/tasks/devices.yml) – Device & Network Provisioning
 
 - **Manufacturers:** `networktocode.nautobot.manufacturer`
 - **Device Types:** `networktocode.nautobot.device_type`
@@ -239,7 +239,7 @@ This top-level playbook includes tasks in logical order:
 
 ---
 
-### 🌍 `bgp.yml` – BGP Configuration
+### 🌍 [bgp.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/roles/load_nautobot/tasks/bgp.yml) – BGP Configuration
 
 - **Autonomous Systems:** `networktocode.nautobot.plugin (bgp.autonomous-systems)`
 - **Routing Instances:** `networktocode.nautobot.plugin (bgp.routing-instances)`
@@ -249,5 +249,18 @@ This top-level playbook includes tasks in logical order:
   - PeerEndpoints
   - PeerEndpoint AFI/SAFI
 
-Stay tuned for Part 4 where we'll use this data to dynamically generate configuration templates and validate configuration compliance with Golden Config!
+## Conclusion
+In Part 3, you’ve built a reliable workflow to populate Nautobot with structured network data using Ansible. This includes everything from physical and logical device modeling to IPAM and BGP routing definitions—setting the stage for dynamic automation.
 
+🔜 Next Up: Containerlab Topology Generation
+
+In Part 4, we’ll use the data you’ve added to Nautobot to automatically build a complete Containerlab topology, including:
+
+Defining nodes, links, and interfaces
+
+Using device roles and platforms from Nautobot
+
+Creating topology files dynamically with Jinja2
+
+🎯 Action:
+Ensure your Nautobot instance is fully populated and accessible. Then, get ready to build and launch your virtual network lab using Containerlab in the next post.
