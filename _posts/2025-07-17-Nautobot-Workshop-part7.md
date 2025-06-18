@@ -1,5 +1,5 @@
 ---
-title: Nautobot Workshop Blog Series - Part 7 - Nautobot Ansible Dynamic Inventory
+title: Nautobot Workshop Blog Series - Part 6 - Nautobot Golden Configuration - Intended Configurations
 date: 2025-07-17 9:00:00 -6
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
@@ -23,295 +23,186 @@ This series is perfect for network engineers aiming to combine source of truth, 
 🚀 All project files are available in this [GitHub repo](https://github.com/byrn-baker/Nautobot-Workshop)
 
 
-## Part 7 - Nautobot Ansible Dynamic Inventory
-In this section we will redirect our focus back over to Ansible and using Nautobot as our source of truth to generate and deploy router configurations.
+## Part 6 - Nautobot Golden Configuration - Intended Configurations
+Let’s clear up what is meant by configuration compliance. A config is considered compliant when the generated config (what is called the "intended configuration"—usually built from source-of-truth data and a Jinja2 template) exactly matches the config pulled from the device backup. And when I say exact, I mean character-for-character. So even though most engineers would treat int g0/0 and interface GigabitEthernet0/0 as the same, the compliance check doesn’t, it’s a mismatch, period.
 
-### Setting up the Dynamic inventory
-Under the inventory folder create a new file name ```inventory.yml```. This will hold our dynamic inventory configurations. You will also want to store your API token as an environmental variable. I am also going to use ansible-vault to store my secrets, which includes the api token and router login.
+There are a few common reasons a device might show up as non-compliant:
+    - Missing config on the device
+    - Extra config on the device
+    - Incorrect data in the source-of-truth, leading to a false positive
+    - Issues in the Jinja2 template generating the wrong config
+    - Parsing problems when pulling the backup config
 
-> You will need to install netutils, ansible-pylibssh and paramiko via pip in your virtual env before using the dynamic inventory.
+There’s no magic here. You still need to define what “good” config looks like, and the tool just does a straight comparison. It doesn’t try to guess what you meant—only what you built. So if something’s missing from your intended config because the data or template was off, the tool flags it, even if the device itself is technically fine from an operational perspective.
+
+### Updating Golden Configuration Settings
+Create another repository for the Jinja templates or you can fork [mine](https://github.com/byrn-baker/nautobot_workshop_golden_config_templates.git). Use the above to setup this repository and only select the "jinja templates" under the provides section.
+<img src="/assets/img/nautobot_workshop/2-git-repos.webp" alt="">
+
+Go back to the Golden Config Settings and update the default setting we used in the last section. We want to include a folder location for the Intended Configuration. We will save the intended configurations in the intended-config folder.
+
+<img src="/assets/img/nautobot_workshop/golden_config_settings_intended_templates.webp" alt="">
+
+### Creating the Jinja2 Templates
+Lets get our templates started, the Jinja2 templates will use the platform network_driver to determine what template is being used. So in our example we have IOS and a EOS drivers, so our template names in the folder would be ```cisco_ios.j2``` and ```arista_eos.j2```. This needs to exactly match how this is displayed in Nautobot. Make sure you have a folder called ```nautobot_workshop_golden_config_templates``` after cloning it to your working directory. 
+
+Inside your ```nautobot_workshop_golden_config_templates``` folder create the below files:
+```bash
+ubuntu@containerlabs:~/Nautobot-Workshop$ touch nautobot_workshop_golden_config_templates/cisco_ios.j2
+ubuntu@containerlabs:~/Nautobot-Workshop$ touch nautobot_workshop_golden_config_templates/arista_eos.j2
+ubuntu@containerlabs:~/Nautobot-Workshop$ cd nautobot_workshop_golden_config_templates/
+ubuntu@containerlabs:~/nautobot_workshop_golden_config_templates$ tree
+.
+├── arista_eos.j2
+└── cisco_ios.j2
+
+1 directory, 2 files
+```
+As stated above we want to make sure from a compliance standpoint your templates should exactly match how the running configuration on the device looks.
+
+Lets start with the cisco_ios.j2 template, we will make slightly different templates for each role, this way you have a structure that can work with routers and switches if you want later. We will use folders to separate out those different templates, but all will start with this first cisco_ios.j2 template.
+
+[cisco_ios.j2](https://github.com/byrn-baker/nautobot_workshop_golden_config_templates/blob/main/cisco_ios.j2)
+
+We are looking at the device_role name and matching that to an existing device role for a cisco router, then pointing it to a folder and another jinja template. Make sure in your nautobot_workshop_golden_config_templates folder you now have these folders and jinja templates.
+
+```bash
+ubuntu@containerlabs:~/nautobot_workshop_golden_config_templates$ mkdir -p ios/platform_templates
+ubuntu@containerlabs:~/nautobot_workshop_golden_config_templates$ mkdir -p ios/interfaces
+ubuntu@containerlabs:~/nautobot_workshop_golden_config_templates$ touch ios/platform_templates/provider_router.j2
+ubuntu@containerlabs:~/nautobot_workshop_golden_config_templates$ touch ios/platform_templates/provider_edge_router.j2
+ubuntu@containerlabs:~/nautobot_workshop_golden_config_templates$ touch ios/platform_templates/customer_edge_router.j2
+ubuntu@containerlabs:~/nautobot_workshop_golden_config_templates$ touch ios/interfaces.j2
+ubuntu@containerlabs:~/nautobot_workshop_golden_config_templates$ touch ios/interfaces/_loopback.j2
+ubuntu@containerlabs:~/nautobot_workshop_golden_config_templates$ touch ios/interfaces/_router_physical.j2
+ubuntu@containerlabs:~/nautobot_workshop_golden_config_templates$ touch ios/interfaces/_switch_l2_physical.j2
+ubuntu@containerlabs:~/nautobot_workshop_golden_config_templates$ touch ios/interfaces/_switch_l3_physical.j2
+ubuntu@containerlabs:~/nautobot_workshop_golden_config_templates$ touch ios/_switch_l3_virtial.j2
+ubuntu@containerlabs:~/nautobot_workshop_golden_config_templates$ tree
+.
+├── arista_eos.j2
+├── cisco_ios.j2
+└── ios
+    ├── interfaces
+    │   ├── _loopback.j2
+    │   ├── _router_physical.j2
+    │   ├── _switch_l2_physical.j2
+    │   ├── _switch_l3_physical.j2
+    │   └── _switch_l3_virtial.j2
+    ├── interfaces.j2
+    └── platform_templates
+        ├── customer_edge_router.j2
+        ├── provider_edge_router.j2
+        └── provider_router.j2
+
+4 directories, 11 files
+```
+
+This format allow us to keep the templates as modular as possible, so for example the interfaces in our lab, we can reuse the same format for all three devices roles and simply reference those templates using the include statements. This should help cut down on how many different files you are attempting to manage and help maintain a standard configuration template as you build out your templates.
+
+Lets start with the provider_router template, we can pretty much just take one of our backups and past it into this template. With the correct structure in place you can start to adjust the sections of the configuration to insert the variables from our SoT, Nautobot.
+
+> Remember that for the compliance piece your intended configurations should match exactly to your backup configurations. This means when naming interfaces in Nautobot use the interface nomenclature that is in the running configuration, not the short form.
 {: .prompt-tip }
 
-We will create a query to pull all of the variables we need to build the configuration. We will want the UUID and the network driver for sure, other variables I will leave up to you, but you can pull the interfaces among a host of other device data if you wish. The network driver will be used with Ansible to correctly set the connection type, and the device UUID we will use in a graphql query as another task before templating the configurations to a file.
+If you take a copy of one of the backup configs for a provider_router we can make just two changes, include a variable for the hostname and then replace the interfaces with an include to the interfaces template. In the interfaces template it will loop through all the device interfaces and check for different names and/or device roles or device types, I will leave that up to you. However you decide to proceed make sure your saved graphhQL query includes those things you want to use in the template. For example if there is a specific configuration for all MGMT interfaces then make sure in the query you include the mgmt_only field.
 
-[inventory.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/inventory/inventory.yml)
+[interfaces.j2](https://github.com/byrn-baker/nautobot_workshop_golden_config_templates/blob/main/ios/interfaces.j2)
 
-### Creating configuration templating role
-If we go back to our ansible-lab folder where we created the playbooks to load nautobot and build the lab topology, create a new folder under the roles called ```build_lab_config/``` We will be creating the below tree
+[_loopback.j2](https://github.com/byrn-baker/nautobot_workshop_golden_config_templates/blob/main/ios/interfaces/_loopback.j2)
 
-```bash
-(.ansible) ubuntu@containerlabs:~/Nautobot-Workshop/ansible-lab$ tree
-└── roles
-    ├── build_lab_config
-    │   ├── tasks
-    │   │   └── main.yml
-    │   ├── templates
-    │   │   ├── cisco_ios.j2
-    │   │   └── ios
-    │   │       ├── interfaces
-    │   │       │   ├── _loopback.j2
-    │   │       │   ├── _router_physical.j2
-    │   │       │   ├── _switch_l2_physical.j2
-    │   │       │   ├── _switch_l3_physical.j2
-    │   │       │   └── _switch_l3_virtial.j2
-    │   │       ├── interfaces.j2
-    │   │       └── platform_templates
-    │   │           └── provider_router.j2
-    │   └── vars
-    │       └── main.yml
+[_router_physical.j2](https://github.com/byrn-baker/nautobot_workshop_golden_config_templates/blob/main/ios/interfaces/_router_physical.j2)
+
+[provider_router.j2](https://github.com/byrn-baker/nautobot_workshop_golden_config_templates/blob/main/ios/platform_templates/provider_router.j2)
+
+### Updating the container deployment
+> Before our Jinja templates will function correctly we need to make a change and add a file to our nautobot-docker-compose deployment. Under the nautobot-docker-compose folder create a new folder called ```custom_jinja_filters``` and place a file in this folder called ```netaddr_filters.py```. 
+{: .prompt-tip }
+
+netaddr_filters.py:
+```python
+from netaddr import IPNetwork
+from django_jinja import library
+
+@library.filter
+def ipaddr(value, operation=None):
+    """Mimic Ansible's ipaddr filter."""
+    try:
+        ip = IPNetwork(value)
+    except Exception:
+        return value  # Fail gracefully if it's not CIDR
+
+    if operation == "address":
+        return str(ip.ip)
+    elif operation == "netmask":
+        return str(ip.netmask)
+    elif operation == "prefix":
+        return str(ip.prefixlen)
+    elif operation == "network":
+        return str(ip.network)
+    elif operation == "broadcast":
+        return str(ip.broadcast)
+    elif operation == "hostmask":
+        return str(ip.hostmask)
+    else:
+        return str(ip)  # fallback
+```
+You will need to update the nautobot_config.py to ensure this works with django_jinja
+```python
+"""Nautobot development configuration file."""
+
+# pylint: disable=invalid-envvar-default
+import os
+import sys
+
+from nautobot.core.settings import *  # noqa: F403  # pylint: disable=wildcard-import,unused-wildcard-import
+from nautobot.core.settings_funcs import is_truthy, parse_redis_connection
+from custom_jinja_filters import netaddr_filters  # noqa: F401
 ```
 
-Create a new playbook referencing this new role above:
+Then you will need to also update the ```nautobot-docker-compose/environments/docker-compose.local.yml``` file and add the new folder to the volumes under the nautobot and celery_worker configs
+```yaml
+---
+services:
+  nautobot:
+    command: "nautobot-server runserver 0.0.0.0:8080"
+    ports:
+      - "8080:8080"
+    volumes:
+      - "../config/nautobot_config.py:/opt/nautobot/nautobot_config.py"
+      - "../jobs:/opt/nautobot/jobs"
+      - "../custom_jinja_filters:/opt/nautobot/custom_jinja_filters"
+    healthcheck:
+      interval: "30s"
+      timeout: "10s"
+      start_period: "60s"
+      retries: 3
+      test: ["CMD", "true"]  # Due to layering, disable: true won't work. Instead, change the test
+  celery_worker:
+    volumes:
+      - "../config/nautobot_config.py:/opt/nautobot/nautobot_config.py"
+      - "../jobs:/opt/nautobot/jobs"
+      - "../custom_jinja_filters:/opt/nautobot/custom_jinja_filters"
 
-[pb.build-and-deploy.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/pb.build-and-deploy.yml)
-
-In the [tasks/main.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/roles/build_lab_config/tasks/main.yml) under the ```roles/build_lab_config/tasks/``` folder start by adding a task to query nautobot for all of the information we will need to generate a configuration. We will use Jinja templates to create each configuration in a very similar way as we used in the Nautobot Golden configuration app. There is an option in the query_graphql module that will set all of the data from the query in the devices hostvars. This way you can easily access the data with ```device.hostname```. You will also notice we are using delegate_to so that these tasks are run locally on our Ansible host and not the routers.
-
-
-Make sure the graphql query string is placed in the [vars/main.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/roles/build_lab_config/vars/main.yml) file, the query above will reference this.
-
-
-Next you need to get the templates built out following this tree.
-
-```bash
-├── templates
-    │   │   ├── cisco_ios.j2
-    │   │   └── ios
-    │   │       ├── interfaces
-    │   │       │   ├── _loopback.j2
-    │   │       │   ├── _router_physical.j2
-    │   │       │   ├── _switch_l2_physical.j2
-    │   │       │   ├── _switch_l3_physical.j2
-    │   │       │   └── _switch_l3_virtial.j2
-    │   │       ├── interfaces.j2
-    │   │       └── platform_templates
-    │   │           └── provider_router.j2
 ```
 
-We can use the templates from the previous Config intent section with some small modifications. Because the variables will be store in hostvars we will need to place "device" in front to correctly access the key values.
+Then stop the container, rebuild it and restart it. 
 
-In the [/templates/cisco_ios.j2](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/roles/build_lab_config/templates/cisco_ios.j2) its similar to the template in the intended section except device is placed in front of the role.name so that it can properly access that key value. You will need to ensure you are always access the key values under device in the rest of your templates.
+### Running the Golden Config compliance job
+Once the containers are back up and running, navigate over to Golden Configuration menu, and Tools and click the Generate Intended Config link. We can use this tool to test our intended configuration templates above. This is a great tool and a great way to ensure there are no issues with each template, and if you watching your docker logs it will tell you which file and which line an issue might exists. This provides a decent way to debug as you go.
 
-### Deploy the configurations - Cisco
-Now that we have a skeleton of our configurations creates, (interface descriptions and IPs) lets create another role to push these configurations to the router. We will start with the cisco platform, but the Arista will be very similar.
+<img src="/assets/img/nautobot_workshop/generate_intedend_configs.webp" alt="">
 
-For this task we will use the cisco.ios.ios_config module to push the entire configuration to the cisco router.
+Now navigate over to the Golden Config Overview and click the play button for the P1 router.
+<img src="/assets/img/nautobot_workshop/config-overview.webp" alt="">
 
-[/roles/deploy_lab_configs/tasks/main.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/roles/deploy_lab_configs/tasks/main.yml)
+Then click the Run Job Now button
+<img src="/assets/img/nautobot_workshop/intended-config-job.webp" alt="">
 
-In our lab right P1 should have a configuration that looks something like this if we just focus on the interfaces
+You should see a results page similar to this. You will see a failure for the Configuration Rule as we have not set this up yet. 
+<img src="/assets/img/nautobot_workshop/intended-config-job-results.webp" alt="">
 
-```bash
-P1#
-P1#
-P1#sh run
-Building configuration...
+What you should notice now is a new configuration file under your intended_configs folder and in your overview page that router should now have a backbup, intended configuration, and compliance detail icon on the right side of the page. You should also have a date of the intended status as well.
 
-Current configuration : 1494 bytes
-!
-version 17.12
-service timestamps debug datetime msec
-service timestamps log datetime msec
-!
-hostname P1
-!
-boot-start-marker
-boot-end-marker
-!
-!
-vrf definition clab-mgmt
- description clab-mgmt
- !
- address-family ipv4
- exit-address-family
- !
- address-family ipv6
- exit-address-family
-!
-no aaa new-model
-!
-interface Ethernet0/0
- description clab-mgmt
- vrf forwarding clab-mgmt
- ip address 192.168.220.2 255.255.255.0
-!
-interface Ethernet0/1
- no ip address
- shutdown
-!
-interface Ethernet0/2
- no ip address
- shutdown
-!
-interface Ethernet0/3
- no ip address
- shutdown
-!
-interface Ethernet1/0
- no ip address
- shutdown
-!
-interface Ethernet1/1
- no ip address
- shutdown
-!
-interface Ethernet1/2
- no ip address
- shutdown
-!
-interface Ethernet1/3
- no ip address
- shutdown
-!
-ip forward-protocol nd
-!
-!
-ip http server
-ip http secure-server
-ip route vrf clab-mgmt 0.0.0.0 0.0.0.0 Ethernet0/0 192.168.220.1
-ip ssh bulk-mode 131072
-!
-ipv6 route vrf clab-mgmt ::/0 Ethernet0/0
-!
-!
-!
-!
-control-plane
-!
-!
-!
-line con 0
- logging synchronous
-line aux 0
-line vty 0 4
- login local
- transport input ssh
-!
-!
-!
-!
-end
-
-P1# 
-```
-
-After we push the configs it should now look like this
-
-```bash
-P1#
-P1#
-P1#
-P1#sh run
-Building configuration...
-
-Current configuration : 2065 bytes
-!
-! Last configuration change at 03:03:55 UTC Thu May 22 2025 by admin
-!
-version 17.12
-service timestamps debug datetime msec
-service timestamps log datetime msec
-!
-hostname P1
-!
-boot-start-marker
-boot-end-marker
-!
-!
-vrf definition clab-mgmt
- description clab-mgmt
- !
- address-family ipv4
- exit-address-family
- !
- address-family ipv6
- exit-address-family
-!
-no aaa new-model
-!
-!
-interface Loopback0
- description Protocol Loopback
- ip address 100.0.254.1 255.255.255.255
- ipv6 address 2001:DB8:100:254::1/128
-!
-interface Ethernet0/0
- description MGMT ONLY INTERFACE
- vrf forwarding clab-mgmt
- ip address 192.168.220.2 255.255.255.0
- no cdp enable
-!
-interface Ethernet0/1
- description To P2-Ethernet0/1
- ip address 100.0.12.1 255.255.255.0
- ipv6 address 2001:DB8:100:12::1/64
-!
-interface Ethernet0/2
- description To P3-Ethernet0/2
- ip address 100.0.13.1 255.255.255.0
- ipv6 address 2001:DB8:100:13::1/64
-!
-interface Ethernet0/3
- description NOT IN USE
- no ip address
- shutdown
-!
-interface Ethernet1/0
- description To RR1-Ethernet0/1
- ip address 100.0.101.1 255.255.255.0
- ipv6 address 2001:DB8:100:101::1/64
-!
-interface Ethernet1/1
- description To PE1-Ethernet0/1
- ip address 100.0.11.1 255.255.255.0
- ipv6 address 2001:DB8:100:11::1/64
-!
-interface Ethernet1/2
- no ip address
- shutdown
-!
-interface Ethernet1/3
- no ip address
- shutdown
-!
-ip forward-protocol nd
-!
-!
-ip http server
-ip http secure-server
-ip route vrf clab-mgmt 0.0.0.0 0.0.0.0 Ethernet0/0 192.168.220.1
-ip ssh bulk-mode 131072
-!
-ipv6 route vrf clab-mgmt ::/0 Ethernet0/0
-!
-!
-!
-!
-control-plane
-!
-!
-!
-line con 0
- logging synchronous
-line aux 0
-line vty 0 4
- login local
- transport input ssh
-!
-!
-!
-!         
-end
-
-P1#
-P1#ping 100.0.12.2  
-Type escape sequence to abort.
-Sending 5, 100-byte ICMP Echos to 100.0.12.2, timeout is 2 seconds:
-.!!!!
-Success rate is 80 percent (4/5), round-trip min/avg/max = 1/1/2 ms
-```
-
-## Conclusion
-In this part of the Nautobot Workshop series, we’ve successfully bridged the gap between Nautobot as a Source of Truth and Ansible as our automation engine. By building a dynamic inventory from Nautobot’s GraphQL API, templating device configurations with Jinja2, and deploying them directly to routers using Ansible modules, we've brought full-circle automation into our lab workflow.
-
-This setup not only reflects real-world practices for managing network infrastructure as code, but also lays a strong foundation for scaling and enforcing consistency across a multi-vendor environment. Whether you're simulating a service provider core, validating designs, or testing automation playbooks, this kind of workflow empowers you to iterate faster and with confidence.
+### Conclusion
+With our intended configuration templates in place and the environment updated to support custom Jinja filters, we now have everything we need to perform full configuration compliance checks in Nautobot. By structuring our templates around roles and platforms, and keeping the interface logic modular, we can maintain clean, reusable config templates that scale as the lab grows. Once intended configurations are generated, Nautobot does what it does best—compare them byte-for-byte against the actual configs. If it matches, you're good. If not, it’s on you to track down whether the issue is with the data, the template, or the device itself. Either way, you’ve now got visibility, versioning, and validation—all backed by source-of-truth automation.

@@ -1,5 +1,5 @@
 ---
-title: Nautobot Workshop Blog Series - Part 5 - Nautobot Golden Configuration - Configuration Backups
+title: Nautobot Workshop Blog Series - Part 7 - Nautobot Ansible Dynamic Inventory
 date: 2025-07-03 9:00:00 -6
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
@@ -23,131 +23,295 @@ This series is perfect for network engineers aiming to combine source of truth, 
 🚀 All project files are available in this [GitHub repo](https://github.com/byrn-baker/Nautobot-Workshop)
 
 
-## Part 5 - Nautobot Golden Configuration - Configuration Backups
-Now that we have our containerlabs topology fully functions with a base configuration, we can walk through setting up the Nautobot Golden Configuration application and perform a configuration backup of each node.
+## Part 7 - Nautobot Ansible Dynamic Inventory
+In this section we will redirect our focus back over to Ansible and using Nautobot as our source of truth to generate and deploy router configurations.
 
-You can read more about the [Nautobot Golden Configuration App here.](https://docs.nautobot.com/projects/golden-config/en/latest/)
+### Setting up the Dynamic inventory
+Under the inventory folder create a new file name ```inventory.yml```. This will hold our dynamic inventory configurations. You will also want to store your API token as an environmental variable. I am also going to use ansible-vault to store my secrets, which includes the api token and router login.
 
-Before configuring any of the Golden Configuration setting we need to create a Git token secret and github repo inside our Nautobot sandbox. Navigate over to the Secrets menu and select the blue plus sign creating a new secret. Provide a name and in the provider section use Environment Variable, and in the parameters sections under "Form" type in the variable being used for you github token.
-<img src="/assets/img/nautobot_workshop/secrets.webp" alt="">
-
-
-> When creating a token in github make sure the token can read and write to your repositories. The Nautobot Golden Configuration App will place files into this repository when performing backups of your router configs.
-> The environment variables will need to be placed in your ```nautobot-docker-compose/environments/creds.env``` file.
-> You will need the following:
-> - GITHUB_TOKEN=!your token here!
-> - NAPALM_USERNAME=admin
-> - NAPALM_PASSWORD=admin
-> - DEVICE_SECRET=admin
-> The Napalm user and password will be used by the Golden Configuration application to log in to your routers.
+> You will need to install netutils, ansible-pylibssh and paramiko via pip in your virtual env before using the dynamic inventory.
 {: .prompt-tip }
 
-Next create a secrets group by using the blue plus sign and from the Access type drop down select HTTP(s), from the secrets type use "token", and select your github secret from the Secrets dropdown.
-<img src="/assets/img/nautobot_workshop/secrets-group.webp" alt="">
+We will create a query to pull all of the variables we need to build the configuration. We will want the UUID and the network driver for sure, other variables I will leave up to you, but you can pull the interfaces among a host of other device data if you wish. The network driver will be used with Ansible to correctly set the connection type, and the device UUID we will use in a graphql query as another task before templating the configurations to a file.
 
-Now click the Extensibility menu and then the Git Repositories blue plus sign under "DATA SOURCES" to add your github repository. 
+[inventory.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/inventory/inventory.yml)
 
-Give a name and in the remote URL use the HTTP option from the github green code button under Local Clone. Use the branch where you would like to keep this data, and then select all of the "provides" you would like to sync between nautobot and this repository, leave the jinja templates unselected. In my example I have select all options, but the "jinja templates" because we will use most of them in this series.
-<img src="/assets/img/nautobot_workshop/github_repo.webp" alt="">
+### Creating configuration templating role
+If we go back to our ansible-lab folder where we created the playbooks to load nautobot and build the lab topology, create a new folder under the roles called ```build_lab_config/``` We will be creating the below tree
 
-> You will want to create two folders in your Repos root, "jobs" and "backup-configs". In the jobs folder create a blank file called ```__initi__.py```. It is important for this specific example that you at least select backup configs.
-{: .prompt-tip }
-
-At the bottom click the create & sync button. If all goes well you should see a completed status on this job.
-<img src="/assets/img/nautobot_workshop/git-repo-completed.webp" alt="">
-
-We need to create a graphql that will be used to pull the data, the [Golden Configuration documentation provides one](https://docs.nautobot.com/projects/golden-config/en/latest/user/app_feature_sotagg/#performance) that we can use for now. Still under Extensibility click the blue plus sign on GraphQL Queries, give it a name and paste the query.
-
-<img src="/assets/img/nautobot_workshop/graphql_query.webp" alt="">
-
-```graphql
-query ($device_id: ID!) {
-  device(id: $device_id) {
-    config_context
-    hostname: name
-    position
-    serial
-    role {
-      name
-    }
-    primary_ip4 {
-      id
-      primary_ip4_for {
-        id
-        name
-      }
-    }
-    tenant {
-      name
-    }
-    tags {
-      name
-    }
-    role {
-      name
-    }
-    platform {
-      name
-      network_driver
-      manufacturer {
-        name
-      }
-      network_driver
-      napalm_driver
-    }
-    location {
-      name
-      parent {
-        name
-      }
-    }
-    interfaces {
-      description
-      mac_address
-      enabled
-      mgmt_only
-      cf_ospf_network_type
-      cf_ospf_area
-      cf_mpls_enabled
-      name
-      ip_addresses {
-        address
-        tags {
-          id
-        }
-      }
-      tagged_vlans {
-        id
-      }
-      untagged_vlan {
-        id
-      }
-      connected_interface {
-        name
-        device {
-          name
-        }
-      }
-      tags {
-        id
-      }
-    }
-  }
-}
+```bash
+(.ansible) ubuntu@containerlabs:~/Nautobot-Workshop/ansible-lab$ tree
+└── roles
+    ├── build_lab_config
+    │   ├── tasks
+    │   │   └── main.yml
+    │   ├── templates
+    │   │   ├── cisco_ios.j2
+    │   │   └── ios
+    │   │       ├── interfaces
+    │   │       │   ├── _loopback.j2
+    │   │       │   ├── _router_physical.j2
+    │   │       │   ├── _switch_l2_physical.j2
+    │   │       │   ├── _switch_l3_physical.j2
+    │   │       │   └── _switch_l3_virtial.j2
+    │   │       ├── interfaces.j2
+    │   │       └── platform_templates
+    │   │           └── provider_router.j2
+    │   └── vars
+    │       └── main.yml
 ```
 
-Now select the Golden Config Settings under the Golden Config menu, there should already be a settings called "default". We will use this for our example. Click on this and edit using the edit button on the top right. Under the Backup Configuration section from the backup repository drop down choose the repository we just created, and for the backup path we will use this in our form - ```backup-configs/{{obj.location.name|slugify}}/{{obj.name}}.cfg```. We can leave the Backup Test checked. Under the Templates Configuration section in the SOT AGG Query dropdown choose the graphql we just created above. Once done click update.
-<img src="/assets/img/nautobot_workshop/golden_config_settings.webp" alt="">
+Create a new playbook referencing this new role above:
 
-Now navigate over to the JOBS menu and select Jobs. We will need to enable all of the Nautobot Golden Configuration Jobs so that we can use them later and the Backup configs job now. Select each one by checking each check mark, and clicking edit at the bottom left of the page (edit selected). On the top choose YES in the attributes called Enabled and click apply at the bottom right.
-<img src="/assets/img/nautobot_workshop/jobs.webp" alt="">
-<img src="assets/img/nautobot_workshop/jobs-enabled.webp" alt="">
+[pb.build-and-deploy.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/pb.build-and-deploy.yml)
 
-Now click the Backup Configurations job at the top of the list. From the platform section choose both the EOS and IOS platforms and click the Run Job Now button on the bottom right.
-<img src="/assets/img/nautobot_workshop/backup-job.webp" alt="">
+In the [tasks/main.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/roles/build_lab_config/tasks/main.yml) under the ```roles/build_lab_config/tasks/``` folder start by adding a task to query nautobot for all of the information we will need to generate a configuration. We will use Jinja templates to create each configuration in a very similar way as we used in the Nautobot Golden configuration app. There is an option in the query_graphql module that will set all of the data from the query in the devices hostvars. This way you can easily access the data with ```device.hostname```. You will also notice we are using delegate_to so that these tasks are run locally on our Ansible host and not the routers.
 
-If we have done everything correctly we should see this job end with a status of completed, and in the logs you will see that each router was logged into and configs we retrieved and backed up. These backups will be synced to your repository under the ```backup-config``` folder.
-<img src="/assets/img/nautobot_workshop/backup-job-completed.webp" alt="">
+
+Make sure the graphql query string is placed in the [vars/main.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/roles/build_lab_config/vars/main.yml) file, the query above will reference this.
+
+
+Next you need to get the templates built out following this tree.
+
+```bash
+├── templates
+    │   │   ├── cisco_ios.j2
+    │   │   └── ios
+    │   │       ├── interfaces
+    │   │       │   ├── _loopback.j2
+    │   │       │   ├── _router_physical.j2
+    │   │       │   ├── _switch_l2_physical.j2
+    │   │       │   ├── _switch_l3_physical.j2
+    │   │       │   └── _switch_l3_virtial.j2
+    │   │       ├── interfaces.j2
+    │   │       └── platform_templates
+    │   │           └── provider_router.j2
+```
+
+We can use the templates from the previous Config intent section with some small modifications. Because the variables will be store in hostvars we will need to place "device" in front to correctly access the key values.
+
+In the [/templates/cisco_ios.j2](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/roles/build_lab_config/templates/cisco_ios.j2) its similar to the template in the intended section except device is placed in front of the role.name so that it can properly access that key value. You will need to ensure you are always access the key values under device in the rest of your templates.
+
+### Deploy the configurations - Cisco
+Now that we have a skeleton of our configurations creates, (interface descriptions and IPs) lets create another role to push these configurations to the router. We will start with the cisco platform, but the Arista will be very similar.
+
+For this task we will use the cisco.ios.ios_config module to push the entire configuration to the cisco router.
+
+[/roles/deploy_lab_configs/tasks/main.yml](https://github.com/byrn-baker/Nautobot-Workshop/blob/main/ansible-lab/roles/deploy_lab_configs/tasks/main.yml)
+
+In our lab right P1 should have a configuration that looks something like this if we just focus on the interfaces
+
+```bash
+P1#
+P1#
+P1#sh run
+Building configuration...
+
+Current configuration : 1494 bytes
+!
+version 17.12
+service timestamps debug datetime msec
+service timestamps log datetime msec
+!
+hostname P1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition clab-mgmt
+ description clab-mgmt
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+no aaa new-model
+!
+interface Ethernet0/0
+ description clab-mgmt
+ vrf forwarding clab-mgmt
+ ip address 192.168.220.2 255.255.255.0
+!
+interface Ethernet0/1
+ no ip address
+ shutdown
+!
+interface Ethernet0/2
+ no ip address
+ shutdown
+!
+interface Ethernet0/3
+ no ip address
+ shutdown
+!
+interface Ethernet1/0
+ no ip address
+ shutdown
+!
+interface Ethernet1/1
+ no ip address
+ shutdown
+!
+interface Ethernet1/2
+ no ip address
+ shutdown
+!
+interface Ethernet1/3
+ no ip address
+ shutdown
+!
+ip forward-protocol nd
+!
+!
+ip http server
+ip http secure-server
+ip route vrf clab-mgmt 0.0.0.0 0.0.0.0 Ethernet0/0 192.168.220.1
+ip ssh bulk-mode 131072
+!
+ipv6 route vrf clab-mgmt ::/0 Ethernet0/0
+!
+!
+!
+!
+control-plane
+!
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login local
+ transport input ssh
+!
+!
+!
+!
+end
+
+P1# 
+```
+
+After we push the configs it should now look like this
+
+```bash
+P1#
+P1#
+P1#
+P1#sh run
+Building configuration...
+
+Current configuration : 2065 bytes
+!
+! Last configuration change at 03:03:55 UTC Thu May 22 2025 by admin
+!
+version 17.12
+service timestamps debug datetime msec
+service timestamps log datetime msec
+!
+hostname P1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition clab-mgmt
+ description clab-mgmt
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+no aaa new-model
+!
+!
+interface Loopback0
+ description Protocol Loopback
+ ip address 100.0.254.1 255.255.255.255
+ ipv6 address 2001:DB8:100:254::1/128
+!
+interface Ethernet0/0
+ description MGMT ONLY INTERFACE
+ vrf forwarding clab-mgmt
+ ip address 192.168.220.2 255.255.255.0
+ no cdp enable
+!
+interface Ethernet0/1
+ description To P2-Ethernet0/1
+ ip address 100.0.12.1 255.255.255.0
+ ipv6 address 2001:DB8:100:12::1/64
+!
+interface Ethernet0/2
+ description To P3-Ethernet0/2
+ ip address 100.0.13.1 255.255.255.0
+ ipv6 address 2001:DB8:100:13::1/64
+!
+interface Ethernet0/3
+ description NOT IN USE
+ no ip address
+ shutdown
+!
+interface Ethernet1/0
+ description To RR1-Ethernet0/1
+ ip address 100.0.101.1 255.255.255.0
+ ipv6 address 2001:DB8:100:101::1/64
+!
+interface Ethernet1/1
+ description To PE1-Ethernet0/1
+ ip address 100.0.11.1 255.255.255.0
+ ipv6 address 2001:DB8:100:11::1/64
+!
+interface Ethernet1/2
+ no ip address
+ shutdown
+!
+interface Ethernet1/3
+ no ip address
+ shutdown
+!
+ip forward-protocol nd
+!
+!
+ip http server
+ip http secure-server
+ip route vrf clab-mgmt 0.0.0.0 0.0.0.0 Ethernet0/0 192.168.220.1
+ip ssh bulk-mode 131072
+!
+ipv6 route vrf clab-mgmt ::/0 Ethernet0/0
+!
+!
+!
+!
+control-plane
+!
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login local
+ transport input ssh
+!
+!
+!
+!         
+end
+
+P1#
+P1#ping 100.0.12.2  
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 100.0.12.2, timeout is 2 seconds:
+.!!!!
+Success rate is 80 percent (4/5), round-trip min/avg/max = 1/1/2 ms
+```
 
 ## Conclusion
-In this post, we demonstrated how to integrate the Nautobot Golden Configuration application into our automated lab environment to perform configuration backups across network devices. By setting up secrets, linking a GitHub repository, creating a GraphQL query, and configuring the Golden Config settings, we established a reliable and repeatable workflow for capturing and storing device configurations. This ensures that our lab remains consistent and version-controlled, while also laying the foundation for future compliance checks and configuration drift detection. With backups now automatically pushed to Git, we’re one step closer to a fully operational, automated network lab built on Nautobot.
+In this part of the Nautobot Workshop series, we’ve successfully bridged the gap between Nautobot as a Source of Truth and Ansible as our automation engine. By building a dynamic inventory from Nautobot’s GraphQL API, templating device configurations with Jinja2, and deploying them directly to routers using Ansible modules, we've brought full-circle automation into our lab workflow.
+
+This setup not only reflects real-world practices for managing network infrastructure as code, but also lays a strong foundation for scaling and enforcing consistency across a multi-vendor environment. Whether you're simulating a service provider core, validating designs, or testing automation playbooks, this kind of workflow empowers you to iterate faster and with confidence.
