@@ -1,5 +1,5 @@
 ---
-title: Nautobot Workshop Blog Series - Part 7 - Nautobot Ansible Dynamic Inventory
+title: Nautobot Workshop Blog Series - Part 5 - Nautobot Ansible Dynamic Inventory
 date: 2025-07-03 9:00:00 -6
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
@@ -23,7 +23,7 @@ This series is perfect for network engineers aiming to combine source of truth, 
 🚀 All project files are available in this [GitHub repo](https://github.com/byrn-baker/Nautobot-Workshop)
 
 
-## Part 7 - Nautobot Ansible Dynamic Inventory
+## Part 5 - Nautobot Ansible Dynamic Inventory
 In this section we will redirect our focus back over to Ansible and using Nautobot as our source of truth to generate and deploy router configurations.
 
 ### Setting up the Dynamic inventory

@@ -1,5 +1,5 @@
 ---
-title: Nautobot Workshop Blog Series - Part 6 - Nautobot Golden Configuration - Intended Configurations
+title: Nautobot Workshop Blog Series - Part 7 - Nautobot Golden Configuration - Intended Configurations
 date: 2025-07-17 9:00:00 -6
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
@@ -23,7 +23,7 @@ This series is perfect for network engineers aiming to combine source of truth, 
 🚀 All project files are available in this [GitHub repo](https://github.com/byrn-baker/Nautobot-Workshop)
 
 
-## Part 6 - Nautobot Golden Configuration - Intended Configurations
+## Part 7 - Nautobot Golden Configuration - Intended Configurations
 Let’s clear up what is meant by configuration compliance. A config is considered compliant when the generated config (what is called the "intended configuration"—usually built from source-of-truth data and a Jinja2 template) exactly matches the config pulled from the device backup. And when I say exact, I mean character-for-character. So even though most engineers would treat int g0/0 and interface GigabitEthernet0/0 as the same, the compliance check doesn’t, it’s a mismatch, period.
 
 There are a few common reasons a device might show up as non-compliant:

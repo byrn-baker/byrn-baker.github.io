@@ -1,5 +1,5 @@
 ---
-title: Nautobot Workshop Blog Series - Part 5 - Nautobot Golden Configuration - Configuration Backups
+title: Nautobot Workshop Blog Series - Part 8 - Nautobot Golden Configuration - Configuration Backups
 date: 2025-07-24 9:00:00 -6
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
@@ -23,7 +23,7 @@ This series is perfect for network engineers aiming to combine source of truth, 
 🚀 All project files are available in this [GitHub repo](https://github.com/byrn-baker/Nautobot-Workshop)
 
 
-## Part 5 - Nautobot Golden Configuration - Configuration Backups
+## Part 8 - Nautobot Golden Configuration - Configuration Backups
 Now that we have our containerlabs topology fully functions with a base configuration, we can walk through setting up the Nautobot Golden Configuration application and perform a configuration backup of each node.
 
 You can read more about the [Nautobot Golden Configuration App here.](https://docs.nautobot.com/projects/golden-config/en/latest/)

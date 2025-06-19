@@ -1,5 +1,5 @@
 ---
-title: Nautobot Workshop Blog Series - Part 8 - Nautobot Config Context and Custom Fields
+title: Nautobot Workshop Blog Series - Part 6 - Nautobot Config Context and Custom Fields
 date: 2025-07-10 9:00:00 -6
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
@@ -23,7 +23,7 @@ This series is perfect for network engineers aiming to combine source of truth, 
 🚀 All project files are available in this [GitHub repo](https://github.com/byrn-baker/Nautobot-Workshop)
 
 
-## Part 8 - Nautobot Config Context and Custom Fields
+## Part 6 - Nautobot Config Context and Custom Fields
 
 While the Jinja templates are now in place, many elements within them remain static. Several configuration details—such as those based on a device’s **location** or **role**—need to be dynamic. To achieve this, we should incorporate logic into the templates to ensure that each router receives the appropriate configuration.
 

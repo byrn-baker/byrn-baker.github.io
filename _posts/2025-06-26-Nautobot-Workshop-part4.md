@@ -202,27 +202,28 @@ main.yml:
     validate_certs: false
     query: |
       {
-        devices  {
+        devices {
           name
           primary_ip4 {
             address
+            host
           }
-          device_type{
+          device_type {
             model
-            manufacturer {
-            name
-          }
+            manufacturer{
+              name
             }
-          platform {
+          }
+          platform{
             name
           }
           software_version {
-            version
+          version
           }
           interfaces {
             name
             mgmt_only
-            ip_addresses {
+            ip_addresses{
               address
             }
             connected_interface {
@@ -239,14 +240,14 @@ main.yml:
 - name: Create initial Configs for each device
   template:
     src: "initial_configs.j2"
-    dest: "~/Nautobot-Workshop/clabs/startup-configs/{{ item.name }}.txt"
+    dest: "~/labs/startup-configs/{{ item.name }}.txt"
   loop: "{{ nb_devices.data.devices }}"
   when: item.device_type.model == 'ceos'
 
 - name: Render Containerlab topology
   template:
     src: "containerlab_topology.j2"
-    dest: "~/Nautobot-Workshop/clabs/containerlab-topology.yml"
+    dest: "~/labs/nautobot-workshop-topology.clab.yml"
 ```
 
 Update the two templates ```tempaltes/initial_configs.j2```, and ```templates/containerlab_topology.j2``` files with the following
@@ -569,4 +570,4 @@ PING 192.168.220.3 (192.168.220.3) 56(84) bytes of data.
 ```
 
 ## Conclusion
-With Part 4 complete, we’ve successfully automated the generation of a fully connected Containerlab topology using Nautobot as the dynamic source of truth. By leveraging GraphQL, Ansible, and Jinja2, we've demonstrated how to extract structured device and interface data directly from Nautobot and translate it into a deployable lab environment—bridging the gap between inventory and infrastructure. This approach not only accelerates lab provisioning but ensures consistency and accuracy across virtual topologies. In the next post, we’ll take it a step further by pushing validated configurations to devices and exploring configuration compliance with Nautobot’s Golden Config plugin. Stay tuned as we continue building a production-grade automated lab workflow.
+With Part 4 complete, we’ve successfully automated the generation of a fully connected Containerlab topology using Nautobot as the dynamic source of truth. By leveraging GraphQL, Ansible, and Jinja2, we've demonstrated how to extract structured device and interface data directly from Nautobot and translate it into a deployable lab environment—bridging the gap between inventory and infrastructure. This approach not only accelerates lab provisioning but ensures consistency and accuracy across virtual topologies. In the next post, we’ll take it a step further by using Ansible dynamic inventory to create configurations and push them to devices. Stay tuned as we continue building a production-grade automated lab workflow.
