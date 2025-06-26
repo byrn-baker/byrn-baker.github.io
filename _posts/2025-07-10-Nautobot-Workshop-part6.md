@@ -1,6 +1,6 @@
 ---
 title: Nautobot Workshop Blog Series - Part 6 - Nautobot Config Context and Custom Fields
-date: 2025-07-10 9:00:00 -6
+date: 2025-07-10 9:00:00
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
 image:
