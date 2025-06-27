@@ -24,6 +24,17 @@ This series is perfect for network engineers aiming to combine source of truth, 
 
 
 ## Using the Nautobot Design App to Seed My Workshop Demo
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
+  <iframe src="https://www.youtube.com/embed/TE949A4CE_s" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allowfullscreen 
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+  </iframe>
+</div>
+
+[▶️ Watch the video](https://youtu.be/TE949A4CE_s)
+
 In [Part 3 of the Nautobot Workshop](https://blog.byrnbaker.me/posts/Nautobot-Workshop-part3/), I demonstrated how to automate Nautobot data entry using Ansible playbooks. That method worked well for an initial introduction for how to manage Nautobot with Ansible. But as your topology grows, you will want a more declarative, structured, and maintainable solution—one that can be versioned as a “design spec.”
 
 Enter the Nautobot Design App.
