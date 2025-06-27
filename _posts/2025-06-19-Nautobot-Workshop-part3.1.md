@@ -72,6 +72,28 @@ This transition gave me:
 
 The Design App feels like a natural evolution of my Ansible workflow—less about task orchestration, more about design expression.
 
+## 🧠 Why the ORM Matters in the Design App
+One of the most powerful features of the Nautobot Design App is that it lets you interact with Nautobot models directly using Django's Object-Relational Mapper (ORM). Unlike external tooling like Ansible—which uses the REST API to push data—the Design App’s Python job executes inside the Nautobot process, with full access to the internal data models and relationships.
+This opens up several key advantages:
+- **Performance** – ORM operations are significantly faster than making dozens or hundreds of API calls.
+- **Atomicity** – Model updates are wrapped in database transactions, so you get consistency and rollback support by default.
+- **Validation** – All built-in Django/Nautobot validations are enforced when using the ORM, reducing the risk of invalid data sneaking in.
+- **Advanced Queries** – You can make complex lookups and joins with just a few lines of code. For example, resolving a device’s site, interfaces, or tags in a nested structure becomes trivial.
+- **Extensibility** – Since you're already working within the same Python context as Nautobot itself, you can easily hook into custom plugins, utility functions, or even register signals.
+
+Compared to the more fire-and-forget nature of Ansible’s API calls, the ORM gives you introspection, control, and tight coupling to Nautobot’s full capabilities.
+
+For example, instead of polling the API to find a matching prefix or interface, you can write:
+
+```python
+prefix = Prefix.objects.get(prefix="192.168.1.0/24")
+device = Device.objects.get(name="East-Spine01")
+```
+
+This simplicity is especially powerful when debugging designs or chaining logic—such as matching interface roles with IPAM prefixes, or auto-tagging based on hierarchical location structures.
+
+In short: if you’re building complex topologies, the **ORM** is your best friend.
+
 ## 🧱 Overview of the Design App Architecture
 The Design App lets you render data-driven templates into fully populated Nautobot models. My workflow consists of three key components:
 1. initial_data.yml – Contains raw, structured data for the entire lab.
