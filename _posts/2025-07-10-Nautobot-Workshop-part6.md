@@ -24,6 +24,17 @@ This series is perfect for network engineers aiming to combine source of truth, 
 
 
 ## Part 6 - Extending Nautobot's Data Model: A Deep Dive into Custom Fields and Computed Fields
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
+  <iframe src="https://www.youtube.com/embed/tCCzYdsPSNY" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allowfullscreen 
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+  </iframe>
+</div>
+
+[▶️ Watch the video](https://youtube.com/shorts/tCCzYdsPSNY)
+
 
 As network automation continues to evolve, the need for flexible, extensible network source of truth solutions becomes increasingly critical. Nautobot, the modern network automation platform, addresses this need through its powerful custom fields and computed fields capabilities. These features allow network engineers to extend Nautobot's core data model without modifying the underlying code, making it possible to capture organization-specific network attributes and derive meaningful insights from existing data.
 

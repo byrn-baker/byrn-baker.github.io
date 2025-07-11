@@ -9,6 +9,13 @@ on:
       - README.md
       - LICENSE
 
+  # Schedule to run every Thursday at 9 AM Denver time
+  schedule:
+    # During Daylight Saving Time (March-November): 9 AM MDT = 3 PM UTC (15:00)
+    - cron: '0 15 * * 4'
+    # Note: During Standard Time (November-March): 9 AM MST = 4 PM UTC (16:00)
+    # You may want to adjust this manually or use: '0 16 * * 4'
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
