@@ -1,6 +1,6 @@
 ---
 title: Nautobot Workshop Blog Series - Part 6 - Extending Nautobot's Data Model - A Deep Dive into Custom Fields and Computed Fields
-date: 2025-07-10 9:00:00
+date: 2025-07-10 9:10:00
 categories: [Nautobot,Ansible,Automtation]
 tags: [Nautobot,NetworkAutomation,CustomFields,ComputedFields,NetworkSourceOfTruth]
 image:
