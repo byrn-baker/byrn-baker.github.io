@@ -39,15 +39,13 @@ Update on a couple of things I did to help the Design Builder App fully deploy t
 
 ## The Challenge: BGP Peering Complexity
 
-The Nautobot Design Builder app comes with a BGP peering extension, but it had limitations when dealing with real-world BGP configurations. Specifically, the original extension didn't properly handle:
+The Nautobot Design Builder app comes with an extension to add peering endpoints to the Nautobot BGP Models plugin, but it had limitations when dealing with specific fields related to these endpoint models. Specifically, the original extension didn't properly handle additional endpoint fields like:
+- Peer group
+- Interface
+- IP address
+- Description
 
-- Peer groups with all necessary attributes
-- Source interface references
-- Local IP address assignments
-- Comprehensive endpoint descriptions
-- Complex BGP peer configurations with multiple address families
-
-For my workshop, I needed to create a comprehensive BGP infrastructure that would demonstrate realistic network topologies with proper peer group configurations and interface bindings.
+For my workshop, I needed to create a comprehensive BGP infrastructure that would demonstrate realistic network topologies with proper peer group configurations and interface bindings and Descriptions.
 
 ## The Solution: Custom Extension Development
 
@@ -220,7 +218,7 @@ def build_peer_endpoint(self, endpoint_data):
     return self.PeerEndpoint(self.environment, endpoint)
 ```
 
-This enhanced method properly resolves all the complex relationships needed for realistic BGP peering configurations.
+This enhanced method properly resolves all the BGP Models endpoint fields which provides a richer more accurate configurations.
 
 ### Testing the Solution: Docker Development Environment
 One of the most elegant aspects of this solution was how easy it was to test changes using Docker. Here's the docker-compose configuration that made development seamless:
