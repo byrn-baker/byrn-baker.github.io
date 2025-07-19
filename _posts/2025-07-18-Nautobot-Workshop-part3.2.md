@@ -25,7 +25,7 @@ This series is perfect for network engineers aiming to combine source of truth, 
 
 ## Building BGP Infrastructure with Nautobot Design Builder: Extending the BGP Peering Extension
 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-  <iframe src="https://www.youtube.com/embed/TE949A4CE_s" 
+  <iframe src="https://www.youtube.com/embed/vGvwJLQdbCs" 
           frameborder="0" 
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
           allowfullscreen 
@@ -33,7 +33,7 @@ This series is perfect for network engineers aiming to combine source of truth, 
   </iframe>
 </div>
 
-[▶️ Watch the video](https://youtu.be/TE949A4CE_s)
+[▶️ Watch the video](https://youtube.com/shorts/vGvwJLQdbCs)
 
 Update on a couple of things I did to help the Design Builder App fully deploy the intial data needed for this Nautobot Workshop.
 
