@@ -1,6 +1,6 @@
 ---
 title: Nautobot Workshop Blog Series - Part 7 - Nautobot Golden Configuration - Intended Configurations
-date: 2025-07-24 9:00:00
+date: 2025-07-31 9:00:00
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
 image:
