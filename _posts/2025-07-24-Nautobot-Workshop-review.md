@@ -23,7 +23,7 @@ This series is perfect for network engineers aiming to combine source of truth, 
 🚀 All project files are available in this [GitHub repo](https://github.com/byrn-baker/Nautobot-Workshop)
 
 
-## Nautobot Workshop Rewview: From Zero to Network Source of Truth
+## Nautobot Workshop Review: From Zero to Network Source of Truth
 Over the last few months, I’ve walked through building an end-to-end, declarative, source-of-truth-driven network automation lab using [Nautobot](https://networktocode.com/nautobot/), [Containerlab](https://containerlab.dev/), [Ansible](https://docs.ansible.com/?extIdCarryOver=true&intcmp=7015Y000003t7aWQAQ&sc_cid=701f2000001OH6fAAG), and a handful of supporting tools. This post recaps everything we’ve covered so far—setting the stage for what comes next in the Nautobot Workshop.
 
 Whether you're just joining or need a quick refresher, this post brings it all together.
