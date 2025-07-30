@@ -36,10 +36,10 @@ We began with setting up a lab environment on Ubuntu 24.04 with:
 > The goal: build a flexible, multi-vendor emulated lab with Nautobot as the authoritative source of truth.
 
 We imported core config elements as Config Contexts into Nautobot, such as:
-- VRF definitions
-- Interface metadata
-- Line/VTY settings
-- HTTP/SSH configuration
+- Prefix Lists
+- Route Maps
+- OSPF and MPLS global config metadata
+- device specific configs for MLAG
 
 These JSON-based contexts were later rendered into real device configurations via Jinja2 templates.
 
