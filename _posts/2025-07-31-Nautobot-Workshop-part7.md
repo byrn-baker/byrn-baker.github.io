@@ -24,6 +24,17 @@ This series is perfect for network engineers aiming to combine source of truth, 
 
 
 ## Part 7 - Nautobot Golden Configuration - Configuration Backups
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
+  <iframe src="https://www.youtube.com/embed/MqFuY3SriPE" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allowfullscreen 
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+  </iframe>
+</div>
+
+[▶️ Watch the video](https://youtube.com/shorts/MqFuY3SriPE)
+
 Now that we have our containerlabs topology fully functions with a base configuration, we can walk through setting up the Nautobot Golden Configuration application and perform a configuration backup of each node.
 
 You can read more about the [Nautobot Golden Configuration App here.](https://docs.nautobot.com/projects/golden-config/en/latest/)
