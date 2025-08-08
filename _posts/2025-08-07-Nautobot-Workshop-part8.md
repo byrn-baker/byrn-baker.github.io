@@ -24,6 +24,17 @@ This series is perfect for network engineers aiming to combine source of truth, 
 
 
 ## Part 8 - Nautobot Golden Configuration - Intended Configurations
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
+  <iframe src="https://www.youtube.com/embed/ij33muSoHpQ" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allowfullscreen 
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+  </iframe>
+</div>
+
+[▶️ Watch the video](https://youtube.com/shorts/ij33muSoHpQ)
+
 Let’s clear up what is meant by configuration compliance. A config is considered compliant when the generated config (what is called the "intended configuration"—usually built from source-of-truth data and a Jinja2 template) exactly matches the config pulled from the device backup. And when I say exact, I mean character-for-character. So even though most engineers would treat int g0/0 and interface GigabitEthernet0/0 as the same, the compliance check doesn’t, it’s a mismatch, period.
 
 There are a few common reasons a device might show up as non-compliant:
