@@ -38,6 +38,7 @@ This series is perfect for network engineers aiming to combine source of truth, 
 Let’s clear up what is meant by configuration compliance. A config is considered compliant when the generated config (what is called the "intended configuration"—usually built from source-of-truth data and a Jinja2 template) exactly matches the config pulled from the device backup. And when I say exact, I mean character-for-character. So even though most engineers would treat int g0/0 and interface GigabitEthernet0/0 as the same, the compliance check doesn’t, it’s a mismatch, period.
 
 There are a few common reasons a device might show up as non-compliant:
+
     - Missing config on the device
     - Extra config on the device
     - Incorrect data in the source-of-truth, leading to a false positive
@@ -47,7 +48,7 @@ There are a few common reasons a device might show up as non-compliant:
 There’s no magic here. You still need to define what “good” config looks like, and the tool just does a straight comparison. It doesn’t try to guess what you meant—only what you built. So if something’s missing from your intended config because the data or template was off, the tool flags it, even if the device itself is technically fine from an operational perspective.
 
 ### Updating Golden Configuration Settings
-Make sure you have created three repositories, one for each, Jinja templates, intended configs, and backup configs, or you can fork mine [tempaltes](https://github.com/byrn-baker/nautobot_workshop_golden_config_templates.git), [intended-configs](https://github.com/byrn-baker/nautobot_workshop_golden_config_intended_configs), [backup-configs](https://github.com/byrn-baker/nautobot_workshop_golden_config_backup_configs). Select the appropriate provides for each one.
+Make sure you have created three repositories, one for each, Jinja templates, intended configs, and backup configs, or you can fork mine [templates](https://github.com/byrn-baker/nautobot_workshop_golden_config_templates.git), [intended-configs](https://github.com/byrn-baker/nautobot_workshop_golden_config_intended_configs), [backup-configs](https://github.com/byrn-baker/nautobot_workshop_golden_config_backup_configs). Select the appropriate provides for each one.
 <img src="/assets/img/nautobot_workshop/2-git-repos.webp" alt="">
 
 Go back to the Golden Config Settings and update the default setting we used in the last section. We want to include a location for the Intended Configuration, save the intended configurations in the intended-config repo, and for the Templates Configuration use the Jinja Templates repo. Use jinja to setup how the folders and file will be created, for example on the Intended Configs we will store them in a folder based on the location name and the file name will be the device name ```{{obj.location.name|slugify}}/{{obj.name}}.cfg```. We will point the Jinja Templates at a file named after the network driver of each device ```{{obj.platform.network_driver}}.j2```.
