@@ -71,7 +71,6 @@ Examining the INTF rule exposes subtle mismatches. A side-by-side diff (e.g., vi
 Key discrepancies include the absence of ```no shutdown``` in the backup, capitalization variances in IPv6 addresses (e.g., Cisco's uppercase rendering), and omission of the loopback interface in the intended config—necessitating template scrutiny. These textual mismatches precipitate compliance failure.
 <img src="/assets/img/nautobot_workshop/compliance-diff.webp" alt="Configuration Diff">
 
-
 ## Integrating Compliance into NetDevOps Pipelines
 Configuration compliance functions as a sentinel within NetDevOps workflows, validating the fidelity of SoT-driven configurations against deployed states.
 - Trigger notifications or remediation pipelines based on compliance metrics.
