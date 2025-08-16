@@ -7,7 +7,17 @@ image:
   path: /assets/img/nautobot_workshop/light_title_image-50.webp
 ---
 
-## Nautobot Workshop Blog Series - Part 9 - Nautobot Golden Configuration: Practical Configuration Compliance
+## Nautobot Workshop Blog Series - Part 9 - Nautobot Golden Configuration: Configuration Compliance
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
+  <iframe src="https://www.youtube.com/embed/v2KgkAlu7b0" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allowfullscreen 
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+  </iframe>
+</div>
+
+[▶️ Watch the video](https://youtube.com/shorts/v2KgkAlu7b0)
 
 In the realm of network automation, configuration compliance serves as a foundational pillar, ensuring alignment between the intended device configurations—derived from templated sources and authoritative data repositories—and the operational state of network devices. This alignment is paramount for maintaining network reliability, security, and operational efficiency.This installment delves into the practical implications of configuration compliance, elucidates common pitfalls leading to non-compliance, outlines the setup and execution of compliance jobs within Nautobot, and imparts best practices to integrate compliance seamlessly into your network operations framework.
 
