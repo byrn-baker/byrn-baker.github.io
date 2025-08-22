@@ -10,7 +10,7 @@ image:
 With nautobot, we can manage what is called "config_context." We can use this to store specific or generic configuration elements that are hard to find inside the available fields in the nautobot device or interface sections. We will be using config_context to keep a few different configuration elements. Where Nautobot differentiates itself from Netbox is the ability to manage the config_context with a git repo.
 
 Under the Extensibility menu, clock on "Git Repositories" and click the "Add" button on the top right. 
-<img src="/assets/img/ansible_workshop/section10.1.jpg" alt="">
+<img src="/assets/img/ansible_workshop/section10.1.cweb" alt="">
 Next, fill out the name, remote URL, branch, token, and username. Select "config contexts" from the provides selection box. Click create, and Nautobot should sync successfully to the git repo. You can use the same git repo for the other available "Provides" selection but require folders for each in the repo you set up. 
 
 Now that we have the repo setup with Nautobot, we can create config_context files that will be matched with our pod devices.
@@ -92,14 +92,14 @@ dhcp_pool:
 ```
 
 Once Nautobot syncs the repo you should see all of your config_contexts populated under Extensibility and Config Contexts
-<img src="/assets/img/ansible_workshop/section10.2.jpg" alt="">
+<img src="/assets/img/ansible_workshop/section10.2.cweb" alt="">
 
 We should also see that these are also populating at the device level as well. These should show on the right side under source context. The left side will render both the source and local context together into a single JSON or YAML output. Because of this indentation is important to ensure it is rendered correctly. 
-<img src="/assets/img/ansible_workshop/section10.3.jpg" alt="">
+<img src="/assets/img/ansible_workshop/section10.3.cweb" alt="">
 
 If you click the edit button at the device level and scroll down to the local context section you can also place device specific configuration there. These will need to be formated as JSON only. I am using this to store each devices BGP configuration. 
-<img src="/assets/img/ansible_workshop/section10.4.jpg" alt="">
-<img src="/assets/img/ansible_workshop/section10.5.jpg" alt="">
+<img src="/assets/img/ansible_workshop/section10.4.cweb" alt="">
+<img src="/assets/img/ansible_workshop/section10.5.cweb" alt="">
 Notice that the rendered output will be in Alphabetical order as well. 
 
 
