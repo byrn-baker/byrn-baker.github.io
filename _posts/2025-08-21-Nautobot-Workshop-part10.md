@@ -8,6 +8,16 @@ image:
 ---
 
 # Nautobot Workshop Blog Series - Part 10 - Nautobot Golden Configuration - Config Plans and Compliance Remediation
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
+  <iframe src="https://www.youtube.com/embed/v7CbSpLGN4U" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allowfullscreen 
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+  </iframe>
+</div>
+
+[▶️ Watch the video](https://youtube.com/shorts/v7CbSpLGN4U)
 
 ## Advancing Network Assurance: Config Plans and Compliance Remediation in Nautobot's Golden Config App
 In continuation of our exploration into Nautobot's Golden Config App, where we previously examined the intricacies of configuration compliance, this installment shifts focus to Config Plans and Compliance Remediation. These features extend the app's capabilities beyond mere detection of discrepancies, enabling proactive deployment of corrective configurations and automated remediation of non-compliant states. By leveraging Config Plans for targeted deployments and Compliance Remediation for intelligent fixes, network practitioners can achieve a more resilient and automated configuration management paradigm, reducing manual intervention and enhancing overall network integrity.
