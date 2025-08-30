@@ -1,6 +1,6 @@
 ---
 title: Nautobot Workshop Blog Series - Part 11 - Nautobot Jobs - Creating validation jobs
-date: 2025-08-27 09:00:00
+date: 2025-08-27 8:00:00
 categories: [Nautobot, Ansible, Automation]
 tags: [NetworkAutomation, NetworkSourceOfTruth, nautobot, AutomationPlatform, NautobotTutorials]
 image:
