@@ -8,6 +8,16 @@ image:
 ---
 
 # Nautobot Workshop Blog Series - Part 11 - Nautobot Jobs
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
+  <iframe src="https://www.youtube.com/embed/utbpHaYJ4VQ" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allowfullscreen 
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+  </iframe>
+</div>
+
+[▶️ Watch the video](https://youtube.com/shorts/utbpHaYJ4VQ)
 ## Writing Nautobot Jobs to Validate Network Configurations: A Ping-Based Example
 Network configuration validation is critical for ensuring the reliability and correctness of your infrastructure. Nautobot allows you to write custom Jobs to automate tasks like configuration validation. In this blog post, we’ll explore how to create a Nautobot Job that validates Layer 3 (L3) network configurations by performing ping tests between connected router interfaces using Nornir and NAPALM. The example Job provided checks IP connectivity across cabled interfaces to ensure proper configuration.
 
