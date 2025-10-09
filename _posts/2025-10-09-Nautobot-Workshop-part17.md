@@ -1,6 +1,6 @@
 ---
 title: Nautobot Workshop Blog Series - Part 17 - Nautobot Job Hooks - Reducing configuration drift between your live devices and your source of truth
-date: 2025-10-09 8:00:00
+date: 2025-10-08 8:00:00
 categories: [Nautobot, Ansible, Automation]
 tags: [NetworkAutomation, NetworkSourceOfTruth, nautobot, AutomationPlatform, NautobotTutorials]
 image:
