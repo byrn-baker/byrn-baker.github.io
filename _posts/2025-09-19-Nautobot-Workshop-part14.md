@@ -3,6 +3,7 @@ title: Nautobot Workshop Blog Series - Part 14 - Nautobot Device Lifecycle Manag
 date: 2025-09-12 0:00:00
 categories: [Nautobot, Ansible, Automation]
 tags: [NetworkAutomation, NetworkSourceOfTruth, nautobot, AutomationPlatform, NautobotTutorials]
+lab_vps_banner: true
 image:
   path: /assets/img/nautobot_workshop/light_title_image-50.webp
 ---

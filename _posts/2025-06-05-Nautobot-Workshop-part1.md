@@ -3,6 +3,7 @@ title: Nautobot Workshop Blog Series - Part 1 Environment Setup
 date: 2025-06-05 10:45:00 -6
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
+lab_vps_banner: true
 image:
   path: /assets/img/nautobot_workshop/light_title_image-50.webp
 ---

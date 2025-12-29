@@ -3,6 +3,7 @@ title: Revolutionizing Automation - Harnessing the Potential of Nautobot's Git R
 date: 2024-05-10 9:00:00 -500
 categories: [100DaysOfHomeLab]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials,100DaysOfHomeLab]
+lab_vps_banner: true
 image:
   path: /assets/img/2024-05-10/nautobot_git.webp
 ---

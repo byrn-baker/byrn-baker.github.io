@@ -3,6 +3,7 @@ title: Lesson 1 - Install Python3, pip3 and Ansible
 date: 2021-07-30 12:00:00 -500
 categories: [AnsibleWorkshop]
 tags: [ansible,ansibleworkshop]
+lab_vps_banner: true
 image:
   path: /assets/img/ansible_workshop/ansible_workshop.webp
 ---

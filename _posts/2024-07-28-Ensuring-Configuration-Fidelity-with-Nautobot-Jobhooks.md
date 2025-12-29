@@ -3,6 +3,7 @@ title: Ensuring Configuration Fidelity with Nautobot Jobhooks
 date: 2024-07-28 9:00:00 -500
 categories: [100DaysOfHomeLab]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials,100DaysOfHomeLab]
+lab_vps_banner: true
 image:
   path: /assets/img/headers/config fidelity.webp
 ---
