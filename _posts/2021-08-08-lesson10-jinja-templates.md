@@ -3,6 +3,7 @@ title: Lesson 10 - Templating with Jinja
 date: 2021-08-08 12:00:00 -500
 categories: [AnsibleWorkshop]
 tags: [ansible,ansibleworkshop,nautobot]
+lab_vps_banner: true
 image:
   path: /assets/img/ansible_workshop/ansible_workshop.webp
 ---

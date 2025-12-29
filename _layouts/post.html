@@ -97,7 +97,12 @@ tail_includes:
 
   <div class="content">
     {{ content }}
+
+    {% if page.lab_vps_banner %}
+      {% include lab-vps-banner.html %}
+    {% endif %}
   </div>
+
 
   <div class="post-tail-wrapper text-muted">
     <!-- categories -->
