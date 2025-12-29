@@ -3,7 +3,7 @@ title: Lesson 8 - Introducing Pynautobot
 date: 2021-08-06 12:00:00 -500
 categories: [AnsibleWorkshop]
 tags: [ansible,ansibleworkshop,nautobot]
-lab_vps_banner: true
+
 image:
   path: /assets/img/ansible_workshop/ansible_workshop.webp
 ---

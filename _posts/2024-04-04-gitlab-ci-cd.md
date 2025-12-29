@@ -4,7 +4,7 @@ title: Gitlab CI/CD Part 1
 date: 2024-04-04 12:00:00 -500
 categories: [100DaysOfHomeLab]
 tags: [kubernetes,cicd,gitlab,100DaysOfHomeLab]
-lab_vps_banner: true
+
 image:
   path: /assets/img/headers/CI-CD-HEADER.webp
 ---

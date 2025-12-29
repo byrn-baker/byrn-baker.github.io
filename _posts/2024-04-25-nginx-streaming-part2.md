@@ -3,7 +3,7 @@ title: Building a RTMP Video Streamer with NGINX Part 2 - Caching with NGINX
 date: 2024-04-25 12:00:00 -500
 categories: [100DaysOfHomeLab]
 tags: [nginx,rtmp,100DaysOfHomeLab]
-lab_vps_banner: true
+
 image:
   path: /assets/img/headers/nginx-streaming-banner.webp
 ---
