@@ -3,7 +3,7 @@ title: Lesson 5 - Building tasks for the core switches
 date: 2021-08-03 12:00:00 -500
 categories: [AnsibleWorkshop]
 tags: [ansible,ansibleworkshop]
-lab_vps_banner: true
+
 image:
   path: /assets/img/ansible_workshop/ansible_workshop.webp
 ---

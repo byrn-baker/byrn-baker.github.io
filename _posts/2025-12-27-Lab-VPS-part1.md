@@ -3,7 +3,7 @@ title: Building a Budget-Friendly Lab VPS Platform
 date: 2025-12-27 08:00:00
 categories: [Homelab, Networking]
 tags: [eve-ng, containerlab, kvm, proxmox]
-lab_vps_banner: true
+
 image:
   path: /assets/img/vps_series/lab-vps-thumbnail.webp
 ---

@@ -3,7 +3,7 @@ title: Nautobot Workshop Blog Series - Review
 date: 2025-07-24 9:00:00
 categories: [Nautobot,Ansible,Automtation]
 tags: [NetworkAutomation,NetworkSourceOfTruth,nautobot,AutomationPlatform,NautobotTutorials]
-lab_vps_banner: true
+
 image:
   path: /assets/img/nautobot_workshop/light_title_image-50.webp
 ---

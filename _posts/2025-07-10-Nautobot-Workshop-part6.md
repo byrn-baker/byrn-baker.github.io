@@ -3,7 +3,7 @@ title: Nautobot Workshop Blog Series - Part 6 - Extending Nautobot's Data Model 
 date: 2025-07-09 9:10:00
 categories: [Nautobot,Ansible,Automtation]
 tags: [Nautobot,NetworkAutomation,CustomFields,ComputedFields,NetworkSourceOfTruth]
-lab_vps_banner: true
+
 image:
   path: /assets/img/nautobot_workshop/light_title_image-50.webp
 ---
