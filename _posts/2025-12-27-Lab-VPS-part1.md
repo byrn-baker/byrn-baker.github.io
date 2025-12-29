@@ -132,3 +132,6 @@ In Part 2, I’ll break down the full architecture:
 - What decisions were intentional — and what tradeoffs were unavoidable
 
 No hype. Just the build.
+
+# Checkout the work in progress
+[Here at LocalEdge Datacenter](https://localedgedatacenter.com/)
