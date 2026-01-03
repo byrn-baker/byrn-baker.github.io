@@ -1,0 +1,61 @@
+/* LocalEdge banner (inherits Chirpy light/dark via CSS vars) */
+.ledc-banner {
+  margin-top: 2rem;
+  border-radius: 1rem;
+  border: 1px solid var(--main-border-color);
+  background: var(--main-bg);
+  box-shadow: var(--card-shadow);
+}
+
+.ledc-banner-inner {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.25rem;
+}
+
+.ledc-banner-text strong {
+  display: block;
+  color: var(--heading-color);
+  font-size: 1.05rem;
+  margin-bottom: 0.25rem;
+}
+
+.ledc-banner-text p {
+  margin: 0;
+  color: var(--text-color);
+  opacity: 0.92;
+}
+
+.ledc-banner-btn {
+  white-space: nowrap;
+  text-decoration: none;
+  padding: 0.55rem 0.9rem;
+  border-radius: 0.8rem;
+  border: 1px solid var(--main-border-color);
+  color: var(--text-color);
+  background: var(--btn-bg);
+  transition: transform 0.08s ease, background 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.ledc-banner-btn:hover {
+  text-decoration: none;
+  background: var(--btn-hover-bg);
+  border-color: var(--btn-hover-border-color);
+  transform: translateY(-1px);
+}
+
+/* Mobile: stack nicely */
+@media (max-width: 768px) {
+  .ledc-banner-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ledc-banner-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
